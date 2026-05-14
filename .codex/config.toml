@@ -1,31 +1,39 @@
+profile = "bashly"
+
 project_doc_max_bytes = 65536
 project_doc_fallback_filenames = ["AGENTS.md", ".agents.md"]
 
-# YOLO-ish local mode:
-# - no approval prompts
-# - workspace-write sandbox
-# Use danger-full-access only if you really mean full filesystem/network exposure.
+[profiles.bashly]
+model = "gpt-5.4-mini"
+model_reasoning_effort = "medium"
 approval_policy = "never"
 sandbox_mode = "workspace-write"
-
-# Hard disable Codex web search for this repo.
 web_search = "disabled"
+model_reasoning_summary = "auto"
 
-# Do not run project-local hooks.
-[features]
+[profiles.bashly.features]
+shell_tool = true
+shell_snapshot = false
 hooks = false
 codex_hooks = false
-shell_snapshot = false
-shell_tool = true
+web_search = false
+web_search_cached = false
+web_search_request = false
+search_tool = false
 
-# Disable transcript history for this repo layer.
+[features]
+shell_tool = true
+shell_snapshot = false
+hooks = false
+codex_hooks = false
+web_search = false
+web_search_cached = false
+web_search_request = false
+search_tool = false
+
 [history]
 persistence = "none"
-
-# There is no documented "disable log files entirely" config key.
-# log_dir can only redirect logs.
-# Prefer an ephemeral path if you want disposable logs.
-# log_dir = "/tmp/codex-bashly-repo-log"
+max_bytes = 10485760
 
 [shell_environment_policy]
 inherit = "core"
