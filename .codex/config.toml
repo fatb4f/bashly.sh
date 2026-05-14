@@ -1,0 +1,40 @@
+# Repo-local Codex configuration.
+# Load with: CODEX_HOME="$PWD/.codex" codex
+
+model = "gpt-5.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+project_doc_max_bytes = 65536
+project_doc_fallback_filenames = ["AGENTS.md", ".agents.md"]
+web_search = "cached"
+
+[features]
+shell_tool = true
+shell_snapshot = true
+hooks = true
+
+[shell_environment_policy]
+include_only = [
+  "HOME",
+  "PATH",
+  "SHELL",
+  "TERM",
+  "USER",
+  "LOGNAME",
+  "PWD",
+  "LANG",
+  "LC_*",
+  "XDG_CONFIG_HOME",
+  "XDG_DATA_HOME",
+  "XDG_STATE_HOME",
+  "XDG_CACHE_HOME",
+  "CODEX_HOME",
+  "NVIM_APPNAME",
+  "BASHLY_*",
+]
+exclude = [
+  "*TOKEN*",
+  "*SECRET*",
+  "*KEY*",
+  "*PASSWORD*",
+]

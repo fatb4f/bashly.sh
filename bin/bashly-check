@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project=${1:-.}
+cd "$project"
+
+printf '== bash syntax ==\n'
+while IFS= read -r -d '' file; do
+  bash -n "$file"
+  printf 'ok %s\n' "$file"
+done < <(find . -type f -name '*.sh' -print0)
+
+printf '\n== shellcheck ==\n'
+if command -v shellcheck >/dev/null 2>&1; then
+  mapfile -d '' files < <(find . -type f -name '*.sh' -print0)
+  if ((${#files[@]})); then
+    shellcheck "${files[@]}"
+  else
+    printf 'skip: no shell files\n'
+  fi
+else
+  printf 'missing: shellcheck\n' >&2
+  exit 127
+fi
+
+printf '\n== shfmt diff check ==\n'
+if command -v shfmt >/dev/null 2>&1; then
+  shfmt -d .
+else
+  printf 'missing: shfmt\n' >&2
+  exit 127
+fi

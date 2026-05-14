@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+required=(git bash ruby bashly codex nvim node npm bash-language-server shellcheck shfmt)
+optional=(shellharden bats shellspec yq cue sem fd rg)
+
+missing=0
+printf '== required ==\n'
+for cmd in "${required[@]}"; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    printf 'ok   %s -> %s\n' "$cmd" "$(command -v "$cmd")"
+  else
+    printf 'miss %s\n' "$cmd"
+    missing=1
+  fi
+done
+
+printf '\n== optional ==\n'
+for cmd in "${optional[@]}"; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    printf 'ok   %s -> %s\n' "$cmd" "$(command -v "$cmd")"
+  else
+    printf 'miss %s\n' "$cmd"
+  fi
+done
+
+exit "$missing"

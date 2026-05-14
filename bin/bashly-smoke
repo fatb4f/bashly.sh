@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project=${1:-.}
+cd "$project"
+
+candidate=${BASHLY_SMOKE_BIN:-}
+if [[ -z "$candidate" ]]; then
+  candidate=$(find . -maxdepth 3 -type f -perm -111 | sort | head -n 1 || true)
+fi
+
+if [[ -z "$candidate" ]]; then
+  printf 'skip: no executable found; set BASHLY_SMOKE_BIN\n' >&2
+  exit 0
+fi
+
+printf '== smoke: %s --help ==\n' "$candidate"
+"$candidate" --help >/dev/null
+printf 'ok\n'
