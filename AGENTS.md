@@ -48,13 +48,9 @@ Do not manually patch generated Bashly output unless the task is explicitly fore
 
 ## Offline reference policy
 
-Prefer local references under `refs/`:
+Prefer local references under `docs/`.
 
-- `refs/bashly-framework/`
-- `refs/bashly-wiki/`
-- `refs/bashly-ai-kit/`
-
-Use web lookup only when explicitly requested or when local references are absent/insufficient.
+Use web lookup only when explicitly requested or when local references under `docs/` are absent/insufficient.
 
 ## Validation posture
 
