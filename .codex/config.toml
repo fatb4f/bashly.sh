@@ -1,19 +1,34 @@
-# Repo-local Codex configuration.
-# Load with: CODEX_HOME="$PWD/.codex" codex
-
-model = "gpt-5.5"
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
 project_doc_max_bytes = 65536
 project_doc_fallback_filenames = ["AGENTS.md", ".agents.md"]
-web_search = "cached"
 
+# YOLO-ish local mode:
+# - no approval prompts
+# - workspace-write sandbox
+# Use danger-full-access only if you really mean full filesystem/network exposure.
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
+# Hard disable Codex web search for this repo.
+web_search = "disabled"
+
+# Do not run project-local hooks.
 [features]
+hooks = false
+codex_hooks = false
+shell_snapshot = false
 shell_tool = true
-shell_snapshot = true
-hooks = true
+
+# Disable transcript history for this repo layer.
+[history]
+persistence = "none"
+
+# There is no documented "disable log files entirely" config key.
+# log_dir can only redirect logs.
+# Prefer an ephemeral path if you want disposable logs.
+# log_dir = "/tmp/codex-bashly-repo-log"
 
 [shell_environment_policy]
+inherit = "core"
 include_only = [
   "HOME",
   "PATH",
@@ -23,18 +38,21 @@ include_only = [
   "LOGNAME",
   "PWD",
   "LANG",
-  "LC_*",
+  "LC_.*",
+
   "XDG_CONFIG_HOME",
   "XDG_DATA_HOME",
   "XDG_STATE_HOME",
   "XDG_CACHE_HOME",
+
   "CODEX_HOME",
+  "CODEX_STATE",
+  "CODEX_CACHE",
+  "CODEX_SQLITE_HOME",
+
   "NVIM_APPNAME",
-  "BASHLY_*",
+  "BASHLY_.*",
 ]
-exclude = [
-  "*TOKEN*",
-  "*SECRET*",
-  "*KEY*",
-  "*PASSWORD*",
-]
+exclude = [".*TOKEN.*", ".*SECRET.*", ".*KEY.*", ".*PASSWORD.*"]
+experimental_use_profile = false
+ignore_default_excludes = false

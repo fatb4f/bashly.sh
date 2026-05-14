@@ -8,9 +8,8 @@ description: Use when Bashly framework, Bashly wiki, or Bashly AI kit docs are n
 Preferred local references:
 
 ```txt
-refs/bashly-framework/
-refs/bashly-wiki/
-refs/bashly-ai-kit/
+
+./docs/Bashly
 ```
 
 Do not browse for Bashly docs unless local references are missing, stale, or insufficient for the task.
