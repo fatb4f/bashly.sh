@@ -1,15 +1,16 @@
 ---
 name: agentic-nvim
-description: Enforces Agentic.nvim as the repository code creation channel, using Neovim context, Bash LSP through MCP, shellcheck diagnostics, shell formatting, and editor-native diff/permission review.
-compatibility: Designed for Codex/Agentic.nvim workflows where Bashly source is edited from Neovim and diagnostics/formatting are exposed through Neovim.
+description: Enforces Agentic.nvim as the repository code creation channel, using Neovim context, Bash LSP through MCP, shellcheck diagnostics, shell formatting, headless probes, and editor-native diff/permission review.
+compatibility: Designed for Codex/Agentic.nvim workflows where Bashly source and shell tests are created from Neovim and diagnostics/formatting are exposed through Neovim.
 metadata:
-  version: "1.0"
+  version: "1.1"
   owns:
     - Agentic.nvim/ACP code creation channel
     - Neovim context handoff
     - Bash LSP via MCP
     - shellcheck diagnostics via Neovim
     - shell formatting via Neovim
+    - headless Neovim probes
 ---
 
 # Agentic.nvim
@@ -43,17 +44,20 @@ provider through the configured MCP bridge.
 
 ## Activation
 
-Use this skill for:
+Use this skill for implementation code creation in this repository, including:
 
-- implementation edits
+- Bashly source/config edits
+- Bash partials, helpers, and templates
+- Bats-core test code
+- ShellSpec spec code
 - refactors
 - diagnostic repairs
 - code generation
-- context-rich Bash or Bashly changes
 - editor-native review of provider edits
 
-Do not use this skill as the authority for Bashly domain semantics. Bashly
-source, generation, and generated-output rules belong to the Bashly skill.
+Do not use this skill as the authority for Bashly domain semantics, Bats-core
+test semantics, or ShellSpec test semantics. Those belong to the relevant domain
+skills.
 
 ## Code creation boundary
 
@@ -74,8 +78,8 @@ creation channel.
 
 ## Required Neovim feedback surfaces
 
-For Bash and Bashly work, the Agentic.nvim session must use these Neovim-mediated
-feedback surfaces:
+For Bash, Bashly, Bats-core, and ShellSpec work, the Agentic.nvim session must
+use these Neovim-mediated feedback surfaces:
 
 - Bash LSP diagnostics through MCP
 - shellcheck diagnostics surfaced in Neovim
@@ -86,6 +90,36 @@ asking the provider to repair code.
 
 Changed shell code should be formatted through the configured Neovim formatter
 before final validation.
+
+## Headless Neovim boundary
+
+Headless Neovim is allowed for health checks, scripted validation,
+plugin-load checks, Agentic.nvim API probes, diagnostic extraction, formatting
+checks, and CI-style probes.
+
+Headless Neovim is not the default code creation surface.
+
+Implementation code creation still requires an Agentic.nvim ACP session with
+Neovim context and editor-native review. If headless Neovim is used, it supports
+the workflow by proving loadability, diagnostics, formatting, or configuration
+state.
+
+Accepted headless uses:
+
+- Agentic.nvim load checks
+- public API presence checks
+- Bash LSP/MCP probes
+- shellcheck diagnostic probes
+- shell formatter probes
+- scripted validation before or after interactive Agentic.nvim work
+
+Not accepted as the creation path:
+
+- direct file patching from headless scripts
+- bypassing Agentic.nvim context APIs
+- bypassing permission/diff review
+
+See [headless Neovim](references/headless.md).
 
 ## Context policy
 
@@ -160,6 +194,7 @@ context_added:
 bash_lsp_mcp_result:
 shellcheck_result:
 shell_format_result:
+headless_probe_result:
 validation_run:
 remaining_failures:
 ```

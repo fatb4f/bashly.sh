@@ -13,6 +13,7 @@ This skill validates that implementation work used:
 - shellcheck diagnostics surfaced through Neovim
 - shell formatting surfaced through Neovim
 - editor-native diff/permission review
+- headless Neovim probes for load, API, diagnostics, and formatting when used
 
 ## What this skill does not validate
 
@@ -34,6 +35,7 @@ context_added: <files/selections/diagnostics>
 bash_lsp_mcp_result: <clean/warnings/unavailable/not applicable>
 shellcheck_result: <clean/warnings/unavailable/not applicable>
 shell_format_result: <formatted/already formatted/unavailable/not applicable>
+headless_probe_result: <passed/unavailable/not applicable>
 diff_review: <reviewed/not requested/unavailable>
 validation_run: <repo commands and results>
 remaining_failures: <none or summary>
