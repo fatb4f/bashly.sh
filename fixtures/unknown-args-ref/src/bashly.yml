@@ -1,7 +1,0 @@
-name: unknown-args-ref
-help: Unknown args ref fixture.
-version: 0.1.0
-
-commands:
-  - name: hello
-    help: Handler that references an undeclared ref

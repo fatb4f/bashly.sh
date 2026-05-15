@@ -1,7 +1,0 @@
-name: missing-source
-help: Missing source fixture.
-version: 0.1.0
-
-commands:
-  - name: hello
-    help: Command without a source file
