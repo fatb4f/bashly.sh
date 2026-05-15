@@ -1,51 +1,38 @@
-# Repo-local Codex home guidance
+# Repo-local Codex guidance
 
 Root policy lives in `AGENTS.md`.
-Repo-scoped skills live in `.agents/skills/`.
-Prompt frames live in `.codex/prompts/`.
 
-## Mandatory workflow
+Repo-local skills live in `.agents/skills/`. Each skill directory owns:
 
-Treat Agentic.nvim/ACP inside Neovim as the mandatory code creation channel for
-implementation work.
+```txt
+SKILL.md   # loadable skill manifest with valid YAML front matter
+AGENTS.md  # skill-local operating instructions
+skill.cue  # small capability/gate contract
+```
 
-Do not create implementation patches directly from a generic shell workflow.
-Shell commands may still inspect, generate, lint, test, smoke, and review diffs.
+The root workflow contract lives in `schema/bashly_workflow.cue`.
 
-`approval_policy = "never"` is intentional for this repo-local Codex profile.
-Review is delegated to Agentic.nvim editor-native permission and diff review, not
-Codex CLI approval prompts.
+## Operating model
 
-## Prompt routing
+```txt
+Codex edits source.
+Skills provide local guidance.
+Pre-commit/local CI validates.
+CUE defines the gate contract.
+```
 
-Use `.codex/prompts/bashly-implementation.md` for Bashly source, settings,
-partials, templates, generation, and generated-surface work.
+## Local workflow
 
-Use `.codex/prompts/shell-testing-implementation.md` for Bats-core and
-ShellSpec implementation work.
+Use the Bashly skill for source/config workflow guidance and the shell-validation skill for the pre-commit CI order.
 
-Both prompt frames require the `agentic-nvim` skill.
+Do not route ordinary source edits through a mandatory editor, ACP, MCP, or remote runtime.
 
-## Skill routing
+## Prompt policy
 
-Bashly implementation:
-
-- `.agents/skills/agentic-nvim/SKILL.md`
-- `.agents/skills/bashly/SKILL.md`
-
-Bats-core implementation:
-
-- `.agents/skills/agentic-nvim/SKILL.md`
-- `.agents/skills/bats-core/skill.md`
-
-ShellSpec implementation:
-
-- `.agents/skills/agentic-nvim/SKILL.md`
-- `.agents/skills/shellspec/skill.md`
+Central prompt files are intentionally not used. Skill-local `AGENTS.md` files own the prompt/context for each skill.
 
 ## Defaults
 
-- Use this `.codex/` tree for frames, prompts, and local profile state.
-- Keep prompt frames small and task-shaped.
 - Do not store secrets in `.codex/`.
 - Keep volatile logs, sessions, and transcripts ignored by Git.
+- Keep repo-local guidance small; put skill-specific details in skill directories.

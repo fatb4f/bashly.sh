@@ -1,29 +1,44 @@
 # bashly.sh agent contract
 
-This repository is a simple Bashly source-edit workflow surface.
+## Purpose
 
-## Core rule
+This repository is a Codex/agent workflow surface for safe Bashly source editing.
+
+The active model is intentionally simple:
 
 ```txt
 agent edits source
 local CI validates
-commit only when green
+CUE defines the workflow gate
+skills provide local operating guidance
 ```
 
-## Source boundary
+## Source authority
 
-- Edit Bashly config, source scripts, docs, or tests as needed for the task.
-- Treat generated Bash as disposable output.
-- Do not manually patch generated Bash as the durable fix.
+Use Bashly configuration and source scripts as the durable implementation surface:
 
-## Validation boundary
+- `bashly.yml` / `src/bashly.yml` / Bashly settings files define CLI intent.
+- `src/*.sh` files are editable Bash implementation surfaces.
+- generated Bashly output is disposable and reproducible.
 
-The validation authority is the local CI/pre-commit job defined by `schema/bashly_workflow.cue`.
+Do not manually patch generated Bashly output as the durable fix.
 
-Expected CI order:
+## Validation authority
+
+The pre-commit/local CI workflow is the validation authority.
+
+Required order:
 
 ```txt
-shellharden -> shfmt -> shellcheck source -> bashly generate -> report
+shellharden
+shfmt
+shellcheck source
+bashly generate
+CI report
 ```
 
-Generated ShellCheck and Bats/ShellSpec tests are project extensions, not required by the root contract unless a project opts in.
+`lint_generated` is currently deferred. Bats and ShellSpec are deferred unless a task explicitly activates them.
+
+## Optional frontage
+
+ACP, MCP, Neovim, LSP, and editor integrations are optional frontage. They are not required for the source-edit workflow.
