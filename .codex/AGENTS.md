@@ -12,6 +12,10 @@ implementation work.
 Do not create implementation patches directly from a generic shell workflow.
 Shell commands may still inspect, generate, lint, test, smoke, and review diffs.
 
+`approval_policy = "never"` is intentional for this repo-local Codex profile.
+Review is delegated to Agentic.nvim editor-native permission and diff review, not
+Codex CLI approval prompts.
+
 ## Prompt routing
 
 Use `.codex/prompts/bashly-implementation.md` for Bashly source, settings,

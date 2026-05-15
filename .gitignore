@@ -13,6 +13,13 @@ tmp/
 .codex/sessions/
 .codex/tmp/
 .codex/cache/
+.codex/state/
+.codex/sqlite/
+.codex/history.jsonl
+.codex/*.jsonl
+.codex/*.db
+.codex/*.sqlite
+.codex/auth.json
 
 # Generated Bashly outputs may be project-specific.
 # Keep commented until each project decides artifact policy.

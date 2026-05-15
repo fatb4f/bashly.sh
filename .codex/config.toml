@@ -1,6 +1,6 @@
 profile = "bashly"
 
-project_doc_max_bytes = 65536
+project_doc_max_bytes = 24576
 project_doc_fallback_filenames = ["AGENTS.md", ".agents.md"]
 
 [profiles.bashly]
@@ -16,20 +16,12 @@ shell_tool = true
 shell_snapshot = false
 hooks = false
 codex_hooks = false
-web_search = false
-web_search_cached = false
-web_search_request = false
-search_tool = false
 
 [features]
 shell_tool = true
 shell_snapshot = false
 hooks = false
 codex_hooks = false
-web_search = false
-web_search_cached = false
-web_search_request = false
-search_tool = false
 
 [history]
 persistence = "none"

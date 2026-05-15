@@ -49,7 +49,7 @@ See [Agentic.nvim and ACP](references/acp-nvim.md) for the editor/LSP/MCP bounda
 7. Inspect source, test, and generated diffs.
 8. Summarize contract changes, source changes, test changes, generated effects, validation, and remaining risk.
 
-For project discovery details, use `scripts/inspect-project.py` and [Bashly workflow](references/workflow.md).
+For project discovery details, use `scripts/inspect-project.py` when available.
 
 ## Testing policy
 
@@ -59,7 +59,7 @@ Use Bats for generated CLI behavior. Use ShellSpec for source-level shell logic.
 
 If no test is added, explicitly state whether existing tests already cover the change or why the change is not testable.
 
-See [testing](references/testing.md). Use templates from `assets/bats-cli-contract.bats` and `assets/shellspec-helper-spec.sh` when bootstrapping coverage.
+Use templates from `assets/bats-cli-contract.bats` and `assets/shellspec-helper-spec.sh` when bootstrapping coverage.
 
 ## Generated surface
 
@@ -67,7 +67,6 @@ Allowed by default: inspect, compare, execute, and diagnose generated output.
 
 Forbidden by default: manually patch, format-as-source, or Shellharden-transform generated Bashly output.
 
-See [generated surface](references/generated-surface.md).
 
 ## Validation
 
@@ -82,7 +81,6 @@ Prefer repo adapters when present:
 
 Use primitive tools only when adapters are missing or insufficient.
 
-See [validation](references/validation.md) and [shell tools](references/shell-tools.md).
 
 ## Offline docs
 
@@ -90,7 +88,6 @@ Prefer repository-local docs under `docs/` before web lookup.
 
 Use web lookup only when local docs are missing, stale, insufficient, or the user explicitly asks for online verification.
 
-See [offline docs](references/offline-docs.md).
 
 ## Completion report
 

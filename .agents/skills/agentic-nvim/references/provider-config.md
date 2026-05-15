@@ -23,10 +23,11 @@ A provider entry normally defines:
 
 ## Repo expectation
 
-The repository may prefer a specific ACP provider, but this skill is provider
-agnostic as long as the provider supports the required Agentic.nvim workflow.
+This repository requires `codex-acp` as the Agentic.nvim ACP provider. Other ACP
+providers may be useful elsewhere, but they do not satisfy this repository
+contract unless the user explicitly requests a provider bypass.
 
-Required provider behavior:
+Required Codex ACP provider behavior:
 
 - accepts Agentic.nvim ACP sessions
 - can receive file/selection/diagnostic context

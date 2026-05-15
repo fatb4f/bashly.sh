@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-required=(git bash ruby bashly codex nvim node npm bash-language-server shellcheck shfmt)
+required=(git bash ruby bashly codex codex-acp nvim node npm bash-language-server shellcheck shfmt)
 optional=(shellharden bats shellspec yq cue sem fd rg)
 
 missing=0
