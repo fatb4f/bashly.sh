@@ -67,6 +67,11 @@ local function whole_file_range(bufnr)
 end
 
 local function load_buffer(path)
+  local bufnr = vim.fn.bufnr(path, false)
+  if bufnr > 0 and vim.api.nvim_buf_is_loaded(bufnr) then
+    return bufnr
+  end
+
   vim.cmd("silent keepalt keepjumps noswapfile edit " .. vim.fn.fnameescape(path))
   return vim.api.nvim_get_current_buf()
 end

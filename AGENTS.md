@@ -89,6 +89,8 @@ Implementation summaries should use these fields:
 ```txt
 skill_context:
 execution_substrate:
+api_surface:
+optional_observation:
 context_added:
 changed_source:
 generated_artifacts:

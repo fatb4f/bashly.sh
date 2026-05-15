@@ -1,0 +1,11 @@
+name: unused-arg
+help: Unused arg fixture.
+version: 0.1.0
+
+commands:
+  - name: hello
+    help: Declares an arg but does not use it
+    args:
+      - name: name
+        required: false
+        help: Name to greet

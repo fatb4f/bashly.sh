@@ -1,0 +1,11 @@
+name: bashly-basic
+help: Bashly basic fixture.
+version: 0.1.0
+
+commands:
+  - name: hello
+    help: Print a greeting
+    args:
+      - name: name
+        required: false
+        help: Name to greet

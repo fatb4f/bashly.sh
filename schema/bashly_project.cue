@@ -40,6 +40,28 @@ package bashlybridge
 	range?: #Range
 }
 
+#ArgcProjection: {
+	facts: [...#ArgcFactProjection]
+	refs: [...#ArgcRefProjection]
+}
+
+#ArgcFactProjection: {
+	kind: string
+	name: string
+	source_file: string
+	range: #Range
+	selector: string
+}
+
+#ArgcRefProjection: {
+	name: string
+	source_file: string
+	range: #Range
+	selector: string
+	resolved: bool
+	target_selector?: string
+}
+
 #SourceFileProjection: {
 	path: string
 	file_sha256: string
@@ -94,8 +116,9 @@ package bashlybridge
 		commands: [...#BashlyCommandProjection]
 	}
 	source: #SourceProjection.source
-	selectors: [string]: #SourceSelectorProjection | #GraphSelector | #SelectorProjection
+	selectors: [string]: #SourceSelectorProjection | #GraphSelector | #SelectorProjection | #ArgcSelectorProjection
 	refs?: [...#RefProjection]
+	argc?: #ArgcProjection
 	diagnostics: [...#Diagnostic]
 	gate: #Gate
 }
@@ -133,6 +156,15 @@ package bashlybridge
 	node_sha256?: string
 	changedtick?: int
 	bufnr?: int
+}
+
+#ArgcSelectorProjection: {
+	id: string
+	kind: string
+	path: string
+	range?: #Range
+	parent?: string
+	children?: [...string]
 }
 
 #Range: {

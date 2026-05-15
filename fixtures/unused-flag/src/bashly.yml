@@ -1,0 +1,10 @@
+name: unused-flag
+help: Unused flag fixture.
+version: 0.1.0
+
+commands:
+  - name: hello
+    help: Declares a flag but does not use it
+    flags:
+      - long: --force
+        help: Force mode

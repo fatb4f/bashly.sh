@@ -1,0 +1,11 @@
+{
+  "name": "unknown-args-ref",
+  "expect": {
+    "project": {
+      "diagnostics": [
+        "BASHLY_ARGS_REF_UNKNOWN"
+      ],
+      "gate_blocking": true
+    }
+  }
+}

@@ -1,5 +1,6 @@
 local join = require("bashly_bridge.join")
 local gate = require("bashly_bridge.gate")
+local argc = require("bashly_bridge.argc")
 local refs = require("bashly_bridge.refs")
 local publisher = require("bashly_bridge.publish_diagnostics")
 local source = require("bashly_bridge.source")
@@ -57,6 +58,22 @@ function M.project_bashly_cli(workspace)
         end
       end
     end
+  end
+
+  local argc_out = argc.project_argc(joined)
+  joined.argc = {
+    facts = argc_out.facts or {},
+    refs = argc_out.refs or {},
+  }
+
+  for selector_id, selector in pairs(argc_out.selectors or {}) do
+    if not joined.selectors[selector_id] then
+      joined.selectors[selector_id] = selector
+    end
+  end
+
+  for _, diagnostic in ipairs(argc_out.diagnostics or {}) do
+    table.insert(diagnostics_out, diagnostic)
   end
 
   joined.refs = refs_out

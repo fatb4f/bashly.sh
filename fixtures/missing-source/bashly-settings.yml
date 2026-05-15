@@ -1,0 +1,3 @@
+source_dir: src
+config_path: bashly.yml
+target_dir: bin

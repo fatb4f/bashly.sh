@@ -1,0 +1,12 @@
+{
+  "name": "missing-source",
+  "expect": {
+    "project": {
+      "diagnostics": [
+        "BASHLY_SOURCE_FILE_MISSING",
+        "BASHLY_HANDLER_MISSING"
+      ],
+      "gate_blocking": true
+    }
+  }
+}

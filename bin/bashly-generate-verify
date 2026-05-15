@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+workspace=${1:-.}
+
+exec nvim --headless -n -u NONE \
+  --cmd "set rtp+=${repo_root}" \
+  -c "lua require('bashly_bridge.generate_verify').print_generate_verify(vim.fn.argv(0) ~= '' and vim.fn.argv(0) or '.')" \
+  -c 'qa!' \
+  -- "$workspace"

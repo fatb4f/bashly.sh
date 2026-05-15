@@ -1,0 +1,12 @@
+{
+  "name": "apply-guard-stale",
+  "expect": {
+    "apply": {
+      "failures": [
+        "stale_file_hash",
+        "stale_node_hash",
+        "stale_changedtick"
+      ]
+    }
+  }
+}

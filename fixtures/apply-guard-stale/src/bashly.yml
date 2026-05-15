@@ -1,0 +1,11 @@
+name: apply-guard-stale
+help: Apply stale guard fixture.
+version: 0.1.0
+
+commands:
+  - name: hello
+    help: Apply guard target
+    args:
+      - name: name
+        required: false
+        help: Name to greet

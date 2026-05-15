@@ -1,0 +1,462 @@
+{
+  "expected": {
+    "project": {
+      "diagnostics": [
+        "BASHLY_ARG_DECLARED_UNUSED"
+      ],
+      "gate_blocking": false
+    }
+  },
+  "name": "unused-arg",
+  "observed": {
+    "diagnostics": [
+      "BASHLY_ARG_DECLARED_UNUSED"
+    ],
+    "failures": [],
+    "gate_blocking": false
+  },
+  "ok": true,
+  "phases": {
+    "diagnostics": {
+      "published_count": 1
+    },
+    "project": {
+      "argc": {
+        "facts": [],
+        "refs": []
+      },
+      "bashly": {
+        "commands": [
+          {
+            "args": [],
+            "env": [],
+            "flags": [],
+            "handler_selector": "source.handler.root",
+            "id": "bashly.command.root",
+            "name": "unused-arg",
+            "path": [],
+            "source_file": "src/root_command.sh"
+          },
+          {
+            "args": [
+              "bashly.arg.hello.name"
+            ],
+            "env": [],
+            "flags": [],
+            "handler_selector": "source.handler.hello",
+            "id": "bashly.command.hello",
+            "name": "hello",
+            "path": [
+              "hello"
+            ],
+            "source_file": "src/hello_command.sh"
+          }
+        ],
+        "config_path": "src/bashly.yml",
+        "model_hash": "sha256:0201dd67bf62f52ec1b03d74046369105e24e84a807479f6bc1c1f6e5d2d0466"
+      },
+      "diagnostics": [
+        {
+          "code": "BASHLY_ARG_DECLARED_UNUSED",
+          "message": "bashly.arg.hello.name is declared by command hello but is not used in its handler",
+          "path": "src/hello_command.sh",
+          "selector": "source.handler.hello",
+          "severity": "warning",
+          "source": "bashly-projector"
+        }
+      ],
+      "gate": {
+        "blocking_codes": [],
+        "blocking_count": 0,
+        "green": true,
+        "info_count": 0,
+        "warning_count": 1
+      },
+      "refs": [],
+      "schema_version": 1,
+      "selectors": {
+        "bashly.arg.hello.name": {
+          "children": [],
+          "hashes": {
+            "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8"
+          },
+          "id": "bashly.arg.hello.name",
+          "kind": "bashly_arg",
+          "path": "src/hello_command.sh"
+        },
+        "bashly.command.hello": {
+          "children": [
+            "bashly.arg.hello.name",
+            "source.handler.hello"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8"
+          },
+          "id": "bashly.command.hello",
+          "kind": "bashly_command",
+          "path": "src/hello_command.sh"
+        },
+        "bashly.command.root": {
+          "children": [
+            "bashly.command.hello",
+            "source.handler.root"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9"
+          },
+          "id": "bashly.command.root",
+          "kind": "bashly_command",
+          "path": "src/root_command.sh"
+        },
+        "source.command.hello.1_0": {
+          "children": [],
+          "hashes": {
+            "node_sha256": "sha256:02412226a5e45a08e592161ea63bf59e45a7e032f1a6ec8d9075fdc989c94119"
+          },
+          "id": "source.command.hello.1_0",
+          "kind": "source_command",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "path": "src/hello_command.sh",
+          "range": {
+            "end_column": 29,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 1
+          }
+        },
+        "source.command.hello.whole_file": {
+          "children": [],
+          "hashes": {
+            "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+            "node_sha256": "sha256:b32201f7c70edd97527d026a27b8ed871cd778f70f1054c274c6aeabc013a308"
+          },
+          "id": "source.command.hello.whole_file",
+          "kind": "source_command",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "path": "src/hello_command.sh",
+          "range": {
+            "end_column": 29,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.command.root.1_0": {
+          "children": [],
+          "hashes": {
+            "node_sha256": "sha256:d43ed14697b9fc3fa31833f0c8d4d0eb81407f708f98831444c363ac1958bcc3"
+          },
+          "id": "source.command.root.1_0",
+          "kind": "source_command",
+          "nvim": {
+            "bufnr": 3,
+            "changedtick": 2
+          },
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 31,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 1
+          }
+        },
+        "source.command.root.whole_file": {
+          "children": [],
+          "hashes": {
+            "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+            "node_sha256": "sha256:5d3a50cedb72de1ee9cc3234bf67d8ea9cc6f885b7d7a5a6a25c6c80d7212f73"
+          },
+          "id": "source.command.root.whole_file",
+          "kind": "source_command",
+          "nvim": {
+            "bufnr": 3,
+            "changedtick": 2
+          },
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 31,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.file.src/hello_command.sh": {
+          "children": [
+            "source.command.hello.whole_file",
+            "source.handler.hello",
+            "source.command.hello.1_0"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+            "node_sha256": "sha256:b32201f7c70edd97527d026a27b8ed871cd778f70f1054c274c6aeabc013a308"
+          },
+          "id": "source.file.src/hello_command.sh",
+          "kind": "source_file",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "path": "src/hello_command.sh",
+          "range": {
+            "end_column": 29,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.file.src/root_command.sh": {
+          "children": [
+            "source.command.root.whole_file",
+            "source.handler.root",
+            "source.command.root.1_0"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+            "node_sha256": "sha256:5d3a50cedb72de1ee9cc3234bf67d8ea9cc6f885b7d7a5a6a25c6c80d7212f73"
+          },
+          "id": "source.file.src/root_command.sh",
+          "kind": "source_file",
+          "nvim": {
+            "bufnr": 3,
+            "changedtick": 2
+          },
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 31,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.handler.hello": {
+          "children": [
+            "bashly.command.hello"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+            "node_sha256": "sha256:b32201f7c70edd97527d026a27b8ed871cd778f70f1054c274c6aeabc013a308"
+          },
+          "id": "source.handler.hello",
+          "kind": "source_handler",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "parent": "source.file.src/hello_command.sh",
+          "path": "src/hello_command.sh",
+          "range": {
+            "end_column": 29,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.handler.root": {
+          "children": [
+            "bashly.command.root"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+            "node_sha256": "sha256:5d3a50cedb72de1ee9cc3234bf67d8ea9cc6f885b7d7a5a6a25c6c80d7212f73"
+          },
+          "id": "source.handler.root",
+          "kind": "source_handler",
+          "nvim": {
+            "bufnr": 3,
+            "changedtick": 2
+          },
+          "parent": "source.file.src/root_command.sh",
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 31,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        }
+      },
+      "source": {
+        "dir": "src",
+        "files": {
+          "src/hello_command.sh": {
+            "entities": [
+              {
+                "hashes": {
+                  "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+                  "node_sha256": "sha256:b32201f7c70edd97527d026a27b8ed871cd778f70f1054c274c6aeabc013a308"
+                },
+                "id": "source.file.src/hello_command.sh",
+                "kind": "source_file",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/hello_command.sh",
+                "range": {
+                  "end_column": 29,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+                  "node_sha256": "sha256:b32201f7c70edd97527d026a27b8ed871cd778f70f1054c274c6aeabc013a308"
+                },
+                "id": "source.command.hello.whole_file",
+                "kind": "source_command",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/hello_command.sh",
+                "range": {
+                  "end_column": 29,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+                  "node_sha256": "sha256:b32201f7c70edd97527d026a27b8ed871cd778f70f1054c274c6aeabc013a308"
+                },
+                "id": "source.handler.hello",
+                "kind": "source_handler",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/hello_command.sh",
+                "range": {
+                  "end_column": 29,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "node_sha256": "sha256:02412226a5e45a08e592161ea63bf59e45a7e032f1a6ec8d9075fdc989c94119"
+                },
+                "id": "source.command.hello.1_0",
+                "kind": "source_command",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/hello_command.sh",
+                "range": {
+                  "end_column": 29,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 1
+                }
+              }
+            ],
+            "file_sha256": "sha256:334706ad4819fce103bf8cc3d6e19dc55080e1fabbe70248872e6392457bd6f8",
+            "nvim": {
+              "bufnr": 2,
+              "changedtick": 2
+            },
+            "path": "src/hello_command.sh"
+          },
+          "src/root_command.sh": {
+            "entities": [
+              {
+                "hashes": {
+                  "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+                  "node_sha256": "sha256:5d3a50cedb72de1ee9cc3234bf67d8ea9cc6f885b7d7a5a6a25c6c80d7212f73"
+                },
+                "id": "source.file.src/root_command.sh",
+                "kind": "source_file",
+                "nvim": {
+                  "bufnr": 3,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 31,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+                  "node_sha256": "sha256:5d3a50cedb72de1ee9cc3234bf67d8ea9cc6f885b7d7a5a6a25c6c80d7212f73"
+                },
+                "id": "source.command.root.whole_file",
+                "kind": "source_command",
+                "nvim": {
+                  "bufnr": 3,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 31,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+                  "node_sha256": "sha256:5d3a50cedb72de1ee9cc3234bf67d8ea9cc6f885b7d7a5a6a25c6c80d7212f73"
+                },
+                "id": "source.handler.root",
+                "kind": "source_handler",
+                "nvim": {
+                  "bufnr": 3,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 31,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "node_sha256": "sha256:d43ed14697b9fc3fa31833f0c8d4d0eb81407f708f98831444c363ac1958bcc3"
+                },
+                "id": "source.command.root.1_0",
+                "kind": "source_command",
+                "nvim": {
+                  "bufnr": 3,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 31,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 1
+                }
+              }
+            ],
+            "file_sha256": "sha256:c0ec81325827874efd1516c96494ad862ca1a014b305c5e51c409209a5948ce9",
+            "nvim": {
+              "bufnr": 3,
+              "changedtick": 2
+            },
+            "path": "src/root_command.sh"
+          }
+        }
+      },
+      "workspace": "/tmp/bashly-matrix-unused-arg-iqx4muaz/unused-arg"
+    }
+  }
+}

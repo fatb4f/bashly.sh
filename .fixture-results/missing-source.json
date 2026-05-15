@@ -1,0 +1,284 @@
+{
+  "expected": {
+    "project": {
+      "diagnostics": [
+        "BASHLY_SOURCE_FILE_MISSING",
+        "BASHLY_HANDLER_MISSING"
+      ],
+      "gate_blocking": true
+    }
+  },
+  "name": "missing-source",
+  "observed": {
+    "diagnostics": [
+      "BASHLY_SOURCE_FILE_MISSING",
+      "BASHLY_HANDLER_MISSING"
+    ],
+    "failures": [],
+    "gate_blocking": true
+  },
+  "ok": true,
+  "phases": {
+    "project": {
+      "argc": {
+        "facts": [],
+        "refs": []
+      },
+      "bashly": {
+        "commands": [
+          {
+            "args": [],
+            "env": [],
+            "flags": [],
+            "handler_selector": "source.handler.root",
+            "id": "bashly.command.root",
+            "name": "missing-source",
+            "path": [],
+            "source_file": "src/root_command.sh"
+          },
+          {
+            "args": [],
+            "env": [],
+            "flags": [],
+            "handler_selector": null,
+            "id": "bashly.command.hello",
+            "name": "hello",
+            "path": [
+              "hello"
+            ],
+            "source_file": "src/hello_command.sh"
+          }
+        ],
+        "config_path": "src/bashly.yml",
+        "model_hash": "sha256:df9bcbb56ea44bfbc6a0b7c5ea32b63148f35acf0d097e204ca298fa6e58cc5e"
+      },
+      "diagnostics": [
+        {
+          "code": "BASHLY_SOURCE_FILE_MISSING",
+          "message": "expected Bashly source file is missing: src/hello_command.sh",
+          "path": "src/hello_command.sh",
+          "selector": "bashly.command.hello",
+          "severity": "error",
+          "source": "bashly_graph"
+        },
+        {
+          "code": "BASHLY_HANDLER_MISSING",
+          "message": "Expected source handler selector was not found for command.",
+          "path": "src/hello_command.sh",
+          "selector": "bashly.command.hello",
+          "severity": "error",
+          "source": "bashly_join"
+        }
+      ],
+      "gate": {
+        "blocking_codes": [
+          "BASHLY_SOURCE_FILE_MISSING",
+          "BASHLY_HANDLER_MISSING"
+        ],
+        "blocking_count": 2,
+        "green": false,
+        "info_count": 0,
+        "warning_count": 0
+      },
+      "refs": [],
+      "schema_version": 1,
+      "selectors": {
+        "bashly.command.hello": {
+          "children": [],
+          "id": "bashly.command.hello",
+          "kind": "bashly_command",
+          "path": "src/hello_command.sh"
+        },
+        "bashly.command.root": {
+          "children": [
+            "bashly.command.hello",
+            "source.handler.root"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f"
+          },
+          "id": "bashly.command.root",
+          "kind": "bashly_command",
+          "path": "src/root_command.sh"
+        },
+        "source.command.root.1_0": {
+          "children": [],
+          "hashes": {
+            "node_sha256": "sha256:6206bbd0a561df877ccb31cd071c56d3d8e95a8366d0f2b2e8848cc70184e206"
+          },
+          "id": "source.command.root.1_0",
+          "kind": "source_command",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 35,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 1
+          }
+        },
+        "source.command.root.whole_file": {
+          "children": [],
+          "hashes": {
+            "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+            "node_sha256": "sha256:59dd84c4299f9d35d219b2765d2a24130a235bde0772b8d0ac4e35c028860615"
+          },
+          "id": "source.command.root.whole_file",
+          "kind": "source_command",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 35,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.file.src/root_command.sh": {
+          "children": [
+            "source.command.root.whole_file",
+            "source.handler.root",
+            "source.command.root.1_0"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+            "node_sha256": "sha256:59dd84c4299f9d35d219b2765d2a24130a235bde0772b8d0ac4e35c028860615"
+          },
+          "id": "source.file.src/root_command.sh",
+          "kind": "source_file",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 35,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        },
+        "source.handler.root": {
+          "children": [
+            "bashly.command.root"
+          ],
+          "hashes": {
+            "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+            "node_sha256": "sha256:59dd84c4299f9d35d219b2765d2a24130a235bde0772b8d0ac4e35c028860615"
+          },
+          "id": "source.handler.root",
+          "kind": "source_handler",
+          "nvim": {
+            "bufnr": 2,
+            "changedtick": 2
+          },
+          "parent": "source.file.src/root_command.sh",
+          "path": "src/root_command.sh",
+          "range": {
+            "end_column": 35,
+            "end_line": 1,
+            "start_column": 0,
+            "start_line": 0
+          }
+        }
+      },
+      "source": {
+        "dir": "src",
+        "files": {
+          "src/root_command.sh": {
+            "entities": [
+              {
+                "hashes": {
+                  "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+                  "node_sha256": "sha256:59dd84c4299f9d35d219b2765d2a24130a235bde0772b8d0ac4e35c028860615"
+                },
+                "id": "source.file.src/root_command.sh",
+                "kind": "source_file",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 35,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+                  "node_sha256": "sha256:59dd84c4299f9d35d219b2765d2a24130a235bde0772b8d0ac4e35c028860615"
+                },
+                "id": "source.command.root.whole_file",
+                "kind": "source_command",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 35,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+                  "node_sha256": "sha256:59dd84c4299f9d35d219b2765d2a24130a235bde0772b8d0ac4e35c028860615"
+                },
+                "id": "source.handler.root",
+                "kind": "source_handler",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 35,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 0
+                }
+              },
+              {
+                "hashes": {
+                  "node_sha256": "sha256:6206bbd0a561df877ccb31cd071c56d3d8e95a8366d0f2b2e8848cc70184e206"
+                },
+                "id": "source.command.root.1_0",
+                "kind": "source_command",
+                "nvim": {
+                  "bufnr": 2,
+                  "changedtick": 2
+                },
+                "path": "src/root_command.sh",
+                "range": {
+                  "end_column": 35,
+                  "end_line": 1,
+                  "start_column": 0,
+                  "start_line": 1
+                }
+              }
+            ],
+            "file_sha256": "sha256:22e653f7e2590ab3eccdcf7d039cfbc8eacbcd91492a3c094faa08637b56578f",
+            "nvim": {
+              "bufnr": 2,
+              "changedtick": 2
+            },
+            "path": "src/root_command.sh"
+          }
+        }
+      },
+      "workspace": "/tmp/bashly-matrix-missing-source-a0rbnlcs/missing-source"
+    }
+  }
+}
