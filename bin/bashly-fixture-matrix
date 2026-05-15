@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-
-exec env PYTHONPATH="${repo_root}/lib${PYTHONPATH:+:${PYTHONPATH}}" \
-  python3 -m bashly_bridge.fixture_matrix "$@"
