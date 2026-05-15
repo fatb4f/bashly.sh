@@ -1,3 +1,5 @@
+profile = "bashly"
+
 [profiles.bashly]
 model = "gpt-5.4-mini"
 model_reasoning_effort = "medium"
@@ -5,15 +7,6 @@ approval_policy = "never"
 sandbox_mode = "workspace-write"
 web_search = "disabled"
 model_reasoning_summary = "auto"
-
-[profiles.bashly.features]
-shell_tool = true
-shell_snapshot = false
-hooks = false
-codex_hooks = false
-
-project_doc_max_bytes = 24576
-project_doc_fallback_filenames = ["AGENTS.md", ".agents.md"]
 
 [features]
 shell_tool = true
