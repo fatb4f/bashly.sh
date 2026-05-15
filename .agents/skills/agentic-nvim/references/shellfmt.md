@@ -1,7 +1,7 @@
 # Shell formatting through Neovim
 
-Shell formatting is a required Neovim-mediated feedback surface for changed
-shell code.
+Shell formatting is a Neovim-mediated feedback surface for changed shell code
+when the optional Agentic integration is in use.
 
 The concrete formatter is normally `shfmt`, exposed through the configured
 Neovim formatting integration.
@@ -12,7 +12,7 @@ Neovim formatting integration.
 changed shell buffer
   -> Neovim formatter
   -> shfmt-backed rewrite/check
-  -> Agentic.nvim-visible buffer state
+  -> Agentic.nvim-visible buffer state when used
   -> final repository validation
 ```
 
@@ -26,7 +26,7 @@ changed shell buffer
 ## Formatting loop
 
 ```txt
-create or modify shell code through Agentic.nvim
+create or modify shell code through the chosen implementation channel
   -> format the buffer through Neovim
   -> review the diff
   -> re-run diagnostics

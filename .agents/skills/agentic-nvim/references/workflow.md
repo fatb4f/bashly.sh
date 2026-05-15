@@ -1,7 +1,7 @@
 # Agentic.nvim workflow
 
-Agentic.nvim is the Neovim-native ACP client used as the repository code
-creation channel.
+Agentic.nvim is a Neovim-native ACP client that can be used as an optional
+repository code creation channel.
 
 ## Runtime graph
 
@@ -52,7 +52,7 @@ Expected public operations include:
 open target repo in Neovim
   -> open or restore Agentic.nvim session
   -> add smallest useful file/selection/diagnostic context
-  -> request implementation through ACP provider
+  -> request implementation through ACP provider when chosen
   -> review permission prompts and diffs
   -> apply Neovim diagnostics/formatting feedback
   -> run repository generation/validation commands
@@ -61,5 +61,5 @@ open target repo in Neovim
 
 ## Completion rule
 
-Agentic.nvim mediates code creation. It does not prove correctness by itself.
-Correctness requires the target repository validation surface.
+Agentic.nvim mediates optional code creation. It does not prove correctness by
+itself. Correctness requires the target repository validation surface.

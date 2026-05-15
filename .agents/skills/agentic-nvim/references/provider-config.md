@@ -1,7 +1,8 @@
 # Provider configuration
 
-Agentic.nvim talks to ACP-compatible providers.
-The provider is the agent runtime; Agentic.nvim is the Neovim client surface.
+Agentic.nvim can talk to ACP-compatible providers.
+The provider is the agent runtime; Agentic.nvim is the Neovim client surface
+for that optional integration.
 
 ## Provider entry shape
 
@@ -23,13 +24,13 @@ A provider entry normally defines:
 
 ## Repo expectation
 
-This repository requires `codex-acp` as the Agentic.nvim ACP provider. Other ACP
-providers may be useful elsewhere, but they do not satisfy this repository
-contract unless the user explicitly requests a provider bypass.
+This repository documents `codex-acp` as one optional Agentic.nvim ACP
+provider example. Other ACP providers may be useful elsewhere, but they are
+integration choices rather than core bridge requirements.
 
-Required Codex ACP provider behavior:
+Optional Codex ACP provider behavior:
 
-- accepts Agentic.nvim ACP sessions
+- accepts Agentic.nvim ACP sessions when used
 - can receive file/selection/diagnostic context
 - can request file edits through the editor-mediated permission/diff flow
 - can use configured MCP tools when available

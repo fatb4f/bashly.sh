@@ -30,7 +30,7 @@ PY
 
 run_source_only() {
   workspace=${1:-.}
-  exec nvim --headless -u NONE \
+  exec nvim --headless -n -u NONE \
     --cmd "set rtp+=${repo_root}" \
     -c "lua require('bashly_bridge.project').print_source_projection(vim.fn.argv(0) ~= '' and vim.fn.argv(0) or '.')" \
     -c 'qa!' \
@@ -39,9 +39,18 @@ run_source_only() {
 
 run_full_project() {
   workspace=${1:-.}
-  exec nvim --headless -u NONE \
+  exec nvim --headless -n -u NONE \
     --cmd "set rtp+=${repo_root}" \
     -c "lua require('bashly_bridge.project').print_bashly_cli(vim.fn.argv(0) ~= '' and vim.fn.argv(0) or '.')" \
+    -c 'qa!' \
+    -- "$workspace"
+}
+
+run_publish_diagnostics() {
+  workspace=${1:-.}
+  exec nvim --headless -n -u NONE \
+    --cmd "set rtp+=${repo_root}" \
+    -c "lua require('bashly_bridge.project').print_bashly_cli_and_publish(vim.fn.argv(0) ~= '' and vim.fn.argv(0) or '.')" \
     -c 'qa!' \
     -- "$workspace"
 }
@@ -59,6 +68,10 @@ case "$mode" in
 --project)
   shift
   run_full_project "${1:-.}"
+  ;;
+--publish-diagnostics)
+  shift
+  run_publish_diagnostics "${1:-.}"
   ;;
 '')
   run_full_project "."

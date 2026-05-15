@@ -67,9 +67,8 @@ local function whole_file_range(bufnr)
 end
 
 local function load_buffer(path)
-  local bufnr = vim.fn.bufadd(path)
-  vim.fn.bufload(bufnr)
-  return bufnr
+  vim.cmd("silent keepalt keepjumps noswapfile edit " .. vim.fn.fnameescape(path))
+  return vim.api.nvim_get_current_buf()
 end
 
 local function source_selector_record(id, kind, path, range, file_sha256, node_sha256, bufnr)

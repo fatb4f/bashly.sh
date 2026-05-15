@@ -2,7 +2,7 @@
 
 Bash language intelligence belongs to Neovim.
 The ACP provider receives that language intelligence through the configured MCP
-bridge.
+bridge when the optional integration is used.
 
 ## Contract
 
@@ -15,8 +15,8 @@ bash-language-server
   -> Agentic.nvim session
 ```
 
-Agentic.nvim is the ACP/editor surface. It does not replace the LSP server and
-it does not itself guarantee language intelligence.
+Agentic.nvim is the optional ACP/editor surface. It does not replace the LSP
+server and it does not itself guarantee language intelligence.
 
 ## Required capabilities
 
@@ -35,7 +35,7 @@ open relevant Bash/Bashly file in Neovim
   -> ensure Bash LSP attaches
   -> inspect diagnostics/symbols as needed
   -> expose relevant LSP state through MCP
-  -> add diagnostics or selection to Agentic.nvim context
+  -> add diagnostics or selection to Agentic.nvim context when used
   -> request implementation or repair
 ```
 

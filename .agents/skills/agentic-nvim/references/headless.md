@@ -29,7 +29,7 @@ replace the Agentic.nvim implementation loop.
 
 ## Not accepted as code creation
 
-Do not use headless Neovim to bypass the required implementation channel.
+Do not use headless Neovim to bypass the chosen implementation channel.
 
 Forbidden as the durable creation path:
 
@@ -63,6 +63,6 @@ Health check:
 Completion reports should distinguish interactive creation from headless probes:
 
 ```txt
-agentic_session: interactive session used for code creation
+agentic_session: interactive session used for code creation or "not used"
 headless_probe_result: load/API/diagnostic/format probes passed or unavailable
 ```

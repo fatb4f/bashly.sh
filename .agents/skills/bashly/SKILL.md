@@ -1,7 +1,7 @@
 ---
 name: bashly
-description: Use for Bashly CLI implementation work: project/settings discovery, bashly.yml contract changes, Bash partial edits, Bats or ShellSpec tests, generated artifact regeneration, Agentic.nvim/ACP-mediated editing, and validation with Bash syntax, ShellCheck, shfmt, Shellharden, smoke tests, and CLI contract tests.
-compatibility: Designed for Codex/Agentic.nvim workflows in Bashly repositories with local docs under docs/ and optional Bash tooling installed.
+description: Use for Bashly CLI implementation work: project/settings discovery, bashly.yml contract changes, Bash partial edits, Bats or ShellSpec tests, generated artifact regeneration, and validation with Bash syntax, ShellCheck, shfmt, Shellharden, smoke tests, and CLI contract tests.
+compatibility: Designed for Bashly repositories with local docs under docs/ and optional Bash tooling installed.
 metadata:
   version: "1.1"
   repo: "fatb4f/bashly.sh"
@@ -30,26 +30,30 @@ Authority order:
 
 Generated artifacts are reproducible outputs, not implementation authority.
 
-## Mandatory implementation adapter
+## Core implementation boundary
 
-All implementation edits should happen through Agentic.nvim/ACP unless the user explicitly requests a bypass.
+The core bridge uses Bashly source, generated artifacts, and headless Neovim.
 
-Validation commands may run outside Neovim, but file-changing implementation should originate through the ACP/Neovim path.
-
-See [Agentic.nvim and ACP](references/acp-nvim.md) for the editor/LSP/MCP boundary.
+Optional integrations such as Agentic.nvim, ACP providers, and `nvim-lsp-mcp`
+are consumers of the bridge, not its authority path.
 
 ## Workflow
 
 1. Resolve the active Bashly project root and effective settings.
 2. Read the existing CLI contract and tests before changing behavior.
 3. Define or preserve the target user-visible CLI behavior.
-4. Edit settings, Bashly YAML, source partials, tests, or docs through Agentic.nvim/ACP.
+4. Edit settings, Bashly YAML, source partials, tests, or docs through the bridge-authoritative workflow.
 5. Regenerate Bashly artifacts.
 6. Run syntax, static, format, hardening, smoke, and contract checks as applicable.
 7. Inspect source, test, and generated diffs.
 8. Summarize contract changes, source changes, test changes, generated effects, validation, and remaining risk.
 
 For project discovery details, use `scripts/inspect-project.py` when available.
+
+## Integration notes
+
+If an Agentic.nvim/ACP consumer is actually used, document it explicitly as an
+integration choice rather than a required bridge component.
 
 ## Testing policy
 
@@ -94,6 +98,8 @@ Use web lookup only when local docs are missing, stale, insufficient, or the use
 For implementation tasks, report:
 
 ```txt
+skill_context:
+execution_substrate:
 project_root:
 changed_contract:
 changed_source:

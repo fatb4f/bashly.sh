@@ -18,8 +18,8 @@ if command -v nvim >/dev/null 2>&1; then
   nvim --version | head -1
 fi
 
-# Codex ACP is the repository's mandatory Agentic.nvim provider. Other ACP
-# providers may exist locally, but they do not satisfy this repository contract.
+# Codex ACP is one optional Agentic.nvim provider example. The core Bashly
+# bridge does not require ACP.
 need codex-acp
 
 # Neovim-mediated sensors. Exact integration is configured in Neovim, but the

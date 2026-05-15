@@ -1,28 +1,26 @@
 ---
 name: agentic-nvim
-description: Enforces Agentic.nvim as the repository code creation channel, using Neovim context, Bash LSP through MCP, shellcheck diagnostics, shell formatting, headless probes, and editor-native diff/permission review.
-compatibility: Designed for Codex/Agentic.nvim workflows where Bashly source and shell tests are created from Neovim and diagnostics/formatting are exposed through Neovim.
+description: Optional integration reference for using Agentic.nvim with this repository's Bashly bridge. It is not the bridge substrate or default authority path.
+compatibility: Optional integration documentation for Agentic.nvim/ACP consumers of the Bashly bridge.
 metadata:
   version: "1.1"
   owns:
-    - Agentic.nvim/ACP code creation channel
-    - Neovim context handoff
-    - Bash LSP via MCP
-    - shellcheck diagnostics via Neovim
-    - shell formatting via Neovim
-    - headless Neovim probes
+    - optional Agentic.nvim integration notes
+    - optional ACP consumer guidance
+    - optional Neovim context handoff examples
 ---
 
 # Agentic.nvim
 
-Agentic.nvim is the required code creation adapter.
+Agentic.nvim is an optional consumer of the Bashly bridge.
 
-Use this skill when implementation work must be created through Neovim rather
-than a direct shell patching workflow.
+Use this skill when documenting or validating an Agentic.nvim-based integration
+with the bridge.
 
 ## Contract
 
-Implementation code creation flows through Agentic.nvim/ACP inside Neovim.
+Implementation code creation for the core bridge flows through Bashly,
+headless Neovim, Tree-sitter, and the repository scripts.
 
 ```txt
 Neovim
@@ -34,26 +32,18 @@ Neovim
   -> repository validation
 ```
 
-Agentic.nvim is the editor/client surface.
-The ACP provider is the agent runtime.
+Agentic.nvim is the editor/client surface when that integration is chosen.
+The ACP provider is one possible transport/runtime.
 Neovim provides buffers, files, selections, diagnostics, formatting, windows,
-and diff review.
+and diff review for that optional integration path.
 
 Bash language intelligence is provided by Neovim LSP and exposed to the ACP
 provider through the configured MCP bridge.
 
 ## Activation
 
-Use this skill for implementation code creation in this repository, including:
-
-- Bashly source/config edits
-- Bash partials, helpers, and templates
-- Bats-core test code
-- ShellSpec spec code
-- refactors
-- diagnostic repairs
-- code generation
-- editor-native review of provider edits
+Use this skill only when the task is specifically about Agentic.nvim / ACP
+integration documentation or optional editor workflow validation.
 
 Do not use this skill as the authority for Bashly domain semantics, Bats-core
 test semantics, or ShellSpec test semantics. Those belong to the relevant domain
@@ -61,7 +51,7 @@ skills.
 
 ## Code creation boundary
 
-Implementation edits must originate through Agentic.nvim/ACP.
+The core bridge does not require Agentic.nvim/ACP.
 
 Allowed outside Agentic.nvim:
 
@@ -74,12 +64,12 @@ Allowed outside Agentic.nvim:
 - final diff inspection
 
 These are sensing, projection, and validation operations. They are not the code
-creation channel.
+creation channel for the core bridge.
 
 ## Required Neovim feedback surfaces
 
-For Bash, Bashly, Bats-core, and ShellSpec work, the Agentic.nvim session must
-use these Neovim-mediated feedback surfaces:
+For optional Agentic.nvim integrations, the session may use these
+Neovim-mediated feedback surfaces:
 
 - Bash LSP diagnostics through MCP
 - shellcheck diagnostics surfaced in Neovim
@@ -99,10 +89,9 @@ checks, and CI-style probes.
 
 Headless Neovim is not the default code creation surface.
 
-Implementation code creation still requires an Agentic.nvim ACP session with
-Neovim context and editor-native review. If headless Neovim is used, it supports
-the workflow by proving loadability, diagnostics, formatting, or configuration
-state.
+Headless Neovim is the core bridge validation surface. If Agentic.nvim is used
+as a consumer, headless Neovim can support that optional workflow by proving
+loadability, diagnostics, formatting, or configuration state.
 
 Accepted headless uses:
 
@@ -113,7 +102,7 @@ Accepted headless uses:
 - shell formatter probes
 - scripted validation before or after interactive Agentic.nvim work
 
-Not accepted as the creation path:
+Not accepted as the core bridge creation path:
 
 - direct file patching from headless scripts
 - bypassing Agentic.nvim context APIs
@@ -123,7 +112,7 @@ See [headless Neovim](references/headless.md).
 
 ## Context policy
 
-Use Agentic.nvim context APIs instead of reconstructing context manually.
+Use Agentic.nvim context APIs only when that optional integration is in play.
 
 Prefer the smallest sufficient context:
 
@@ -152,34 +141,29 @@ See [workflow](references/workflow.md) and [provider config](references/provider
 
 Agentic.nvim does not itself provide Bash LSP.
 
-Use the configured MCP bridge to expose Neovim LSP state to the ACP provider.
-Use Bash LSP for diagnostics, definitions, references, symbols, and local code
-context where available.
+Use the configured MCP bridge to expose Neovim LSP state to the ACP provider
+when that optional integration is chosen.
 
 See [LSP/MCP](references/lsp-mcp.md).
 
 ## shellcheck
 
-shellcheck is a required diagnostic source for shell implementation work.
-
-Use the Neovim-integrated shellcheck path so diagnostics are visible in buffers
-and can be added to Agentic.nvim context.
+shellcheck is a required diagnostic source for shell implementation work when
+the optional Agentic integration is being exercised.
 
 See [shellcheck](references/shellcheck.md).
 
 ## shell formatting
 
-Shell formatting is a required Neovim-mediated formatting surface.
-
-Use the configured Neovim formatter, normally backed by `shfmt`, before final
-validation.
+Shell formatting is a Neovim-mediated formatting surface for optional
+Agentic integrations.
 
 See [shell formatting](references/shellfmt.md).
 
 ## Diff and permission boundary
 
-Provider edits must pass through Agentic.nvim's editor-native permission and
-diff-review flow when approval is requested.
+If Agentic.nvim is being used, provider edits must pass through its
+editor-native permission and diff-review flow when approval is requested.
 
 Do not treat provider edits as accepted until the editor diff has been reviewed
 and the relevant buffers have been reloaded or checked.

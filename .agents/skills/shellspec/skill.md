@@ -12,7 +12,7 @@ metadata:
   delegates:
     - generated CLI behavior tests to the bats-core skill
     - Bashly schema and generated CLI source to the bashly skill
-    - shellcheck, shell formatting, LSP, and Neovim execution to the agentic-nvim skill
+    - shellcheck, shell formatting, and validation workflow to the shell-validation skill
 ---
 
 # ShellSpec

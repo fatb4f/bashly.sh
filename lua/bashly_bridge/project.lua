@@ -1,5 +1,7 @@
 local join = require("bashly_bridge.join")
+local gate = require("bashly_bridge.gate")
 local refs = require("bashly_bridge.refs")
+local publisher = require("bashly_bridge.publish_diagnostics")
 local source = require("bashly_bridge.source")
 
 local M = {}
@@ -59,11 +61,22 @@ function M.project_bashly_cli(workspace)
 
   joined.refs = refs_out
   joined.diagnostics = diagnostics_out
+  joined.gate = gate.diagnostic_gate(diagnostics_out)
   return joined
 end
 
 function M.print_bashly_cli(workspace)
   io.write(vim.json.encode(M.project_bashly_cli(workspace)), "\n")
+end
+
+function M.project_bashly_cli_and_publish(workspace)
+  local projection = M.project_bashly_cli(workspace)
+  publisher.publish(projection)
+  return projection
+end
+
+function M.print_bashly_cli_and_publish(workspace)
+  io.write(vim.json.encode(M.project_bashly_cli_and_publish(workspace)), "\n")
 end
 
 return M

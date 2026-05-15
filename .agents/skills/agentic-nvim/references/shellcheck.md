@@ -1,6 +1,7 @@
 # shellcheck through Neovim
 
-shellcheck is a required diagnostic source for shell implementation work.
+shellcheck is a diagnostic source for shell implementation work when the
+optional Agentic integration is in use.
 
 The accepted path is Neovim-mediated diagnostics, not an isolated manual lint
 loop that the Agentic.nvim session cannot see.
@@ -11,8 +12,8 @@ loop that the Agentic.nvim session cannot see.
 shellcheck
   -> Neovim diagnostic integration
   -> buffer diagnostics
-  -> Agentic.nvim context
-  -> ACP repair prompt
+  -> Agentic.nvim context when used
+  -> optional ACP repair prompt
   -> re-check diagnostics
 ```
 
@@ -31,7 +32,7 @@ shellcheck
 ```txt
 open changed shell file in Neovim
   -> collect shellcheck diagnostics through Neovim
-  -> add relevant diagnostics to Agentic.nvim context
+  -> add relevant diagnostics to the active implementation context
   -> ask provider for a bounded repair
   -> re-run shellcheck diagnostics through Neovim
 ```

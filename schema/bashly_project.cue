@@ -23,6 +23,14 @@ package bashlybridge
 	diagnostics: [...#Diagnostic]
 }
 
+#Gate: {
+	green: bool
+	blocking_count: int
+	warning_count: int
+	info_count: int
+	blocking_codes: [...string]
+}
+
 #RefProjection: {
 	kind: string
 	key: string
@@ -75,6 +83,21 @@ package bashlybridge
 	}
 	selectors: [string]: #GraphSelector
 	diagnostics: [...#Diagnostic]
+}
+
+#BashlyProjectProjection: {
+	schema_version: 1
+	workspace: string
+	bashly: {
+		config_path: string
+		model_hash: string
+		commands: [...#BashlyCommandProjection]
+	}
+	source: #SourceProjection.source
+	selectors: [string]: #SourceSelectorProjection | #GraphSelector | #SelectorProjection
+	refs?: [...#RefProjection]
+	diagnostics: [...#Diagnostic]
+	gate: #Gate
 }
 
 #BashlyCommandProjection: {
