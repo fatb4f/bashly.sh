@@ -1,6 +1,12 @@
 package bashly_workflow
 
 #SkillID: "bashly" | "shell-validation" | "bats-core" | "shellspec" | "argc" | "bash-ast" | "tree-sitter"
+#AdapterID: "pre_commit" | "ci"
+#AdapterKind: "local_hook" | "ci_job"
+#Authority: "advisory" | "blocking"
+#MutationMode: "write" | "check"
+#Blocker: "unsafe_write_target" | "generated_bash_edited" | "shellharden_failed" | "shfmt_failed" | "shellcheck_source_failed" | "bashly_generate_failed"
+#Deferred: "shellcheck_generated" | "bats-core" | "shellspec"
 
 workflow: {
 	name: "bashly-source-edit"
@@ -28,31 +34,73 @@ workflow: {
 			generated_bash_manual_edits: false
 		}
 
-		pre_commit_ci: {
+		verify_source: {
 			skills: ["shell-validation", "bashly", "bats-core", "shellspec"]
+			phases: ["format", "lint_source", "generate"]
+
 			format: {
 				order: ["shellharden", "shfmt"]
 				policy: "shellharden first, shfmt second"
 			}
+
 			lint_source: {
 				tool: "shellcheck"
 				after: "format"
 			}
+
 			generate: {
 				tool: "bashly generate"
+				after: "lint_source"
+				env: {
+					BASHLY_FORMATTER: "none"
+				}
+				settings: {
+					formatter: "none"
+					purpose: "disable Bashly generated-output formatting during validation"
+				}
 				must_not_format_source: true
 				must_not_harden_source: true
 				must_not_mutate_source: true
+				source_mutation_guard: true
 			}
+
 			lint_generated: {
 				required: false
 				status: "deferred"
 			}
+
 			test_if_present: {
 				required: false
 				status: "deferred"
-				tools: ["bats", "shellspec"]
+				tools: ["bats-core", "shellspec"]
 			}
+
+			report: {
+				kind: "validation_report"
+			}
+		}
+	}
+
+	adapters: {
+		pre_commit: {
+			kind: #AdapterKind & "local_hook"
+			uses: "verify_source"
+			authority: #Authority & "advisory"
+			mode: #MutationMode & "write"
+			format_source: true
+			generate_mutates_source: false
+			report: {
+				kind: "local_report"
+			}
+		}
+
+		ci: {
+			kind: #AdapterKind & "ci_job"
+			uses: "verify_source"
+			authority: #Authority & "blocking"
+			mode: #MutationMode & "check"
+			format_source: false
+			generate_mutates_source: false
 			report: {
 				kind: "ci_report"
 			}
@@ -61,7 +109,8 @@ workflow: {
 
 	gate: {
 		kind: "ci_job"
-		blocks_on: [
+		adapter: #AdapterID & "ci"
+		blocks_on: [...#Blocker] & [
 			"unsafe_write_target",
 			"generated_bash_edited",
 			"shellharden_failed",
@@ -69,9 +118,9 @@ workflow: {
 			"shellcheck_source_failed",
 			"bashly_generate_failed",
 		]
-		deferred: [
+		deferred: [...#Deferred] & [
 			"shellcheck_generated",
-			"bats",
+			"bats-core",
 			"shellspec",
 		]
 	}

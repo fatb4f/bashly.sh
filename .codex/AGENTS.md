@@ -17,13 +17,13 @@ The root workflow contract lives in `schema/bashly_workflow.cue`.
 ```txt
 Codex edits source.
 Skills provide local guidance.
-Pre-commit/local CI validates.
+CI validates. Pre-commit provides local fast-fail feedback.
 CUE defines the gate contract.
 ```
 
 ## Local workflow
 
-Use the Bashly skill for source/config workflow guidance and the shell-validation skill for the pre-commit CI order.
+Use the Bashly skill for source/config workflow guidance and the shell-validation skill for the shared pre-commit/CI order.
 
 Do not route ordinary source edits through a mandatory editor, ACP, MCP, or remote runtime.
 

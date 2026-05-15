@@ -25,7 +25,7 @@ Do not manually patch generated Bashly output as the durable fix.
 
 ## Validation authority
 
-The pre-commit/local CI workflow is the validation authority.
+CI is the validation authority. Pre-commit is the local fast-fail adapter over the same workflow.
 
 Required order:
 
@@ -33,7 +33,7 @@ Required order:
 shellharden
 shfmt
 shellcheck source
-bashly generate
+bashly generate with Bashly formatting disabled
 CI report
 ```
 
