@@ -8,17 +8,19 @@ sandbox_mode = "workspace-write"
 web_search = "disabled"
 model_reasoning_summary = "auto"
 
-[features]
+project_doc_max_bytes = 24576
+project_doc_fallback_filenames = ["AGENTS.md", ".agents.md"]
+
+[profiles.bashly.features]
 shell_tool = true
 shell_snapshot = false
 hooks = false
-codex_hooks = false
 
-[history]
+[profiles.bashly.history]
 persistence = "none"
 max_bytes = 10485760
 
-[shell_environment_policy]
+[profiles.bashly.shell_environment_policy]
 inherit = "core"
 include_only = [
   "HOME",
