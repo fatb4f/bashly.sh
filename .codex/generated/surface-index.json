@@ -1,0 +1,38 @@
+[
+    {
+        "edit_policy": "never-hand-edit",
+        "kind": "frame",
+        "path": ".codex/frames/repo-frame.md",
+        "source": "internal/agent/templates/repo-frame.md.tmpl"
+    },
+    {
+        "edit_policy": "never-hand-edit",
+        "kind": "frame",
+        "path": ".codex/frames/skills.md",
+        "source": "internal/agent/templates/skills.md.tmpl"
+    },
+    {
+        "edit_policy": "never-hand-edit",
+        "kind": "frame",
+        "path": ".codex/frames/workflow.md",
+        "source": "internal/agent/templates/workflow.md.tmpl"
+    },
+    {
+        "edit_policy": "never-hand-edit",
+        "kind": "index",
+        "path": ".codex/generated/skill-index.json",
+        "source": "internal/agent/codex/indexes.cue"
+    },
+    {
+        "edit_policy": "never-hand-edit",
+        "kind": "index",
+        "path": ".codex/generated/surface-index.json",
+        "source": "internal/agent/codex/indexes.cue"
+    },
+    {
+        "edit_policy": "never-hand-edit",
+        "kind": "rule",
+        "path": ".codex/rules/default.rules",
+        "source": "internal/agent/templates/default.rules.tmpl"
+    }
+]
