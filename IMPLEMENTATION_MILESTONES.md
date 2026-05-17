@@ -48,28 +48,36 @@ Deliverables:
 - Add `internal/agent/base/` for reusable schema and rendering helpers.
 - Add `internal/agent/repo/` for repo-specific facts, skills, workflow, and surfaces.
 - Add `internal/agent/codex/` for Codex-facing projections.
-- Keep `schema/bashly_workflow.cue` aligned with the new graph.
+- During migration, `schema/bashly_workflow.cue` remains the compatibility surface.
+- After `internal/agent` is stable, `schema/bashly_workflow.cue` either imports or projects from `internal/agent`, or becomes deprecated.
 
 Exit criteria:
 
 - Repo semantics are expressed in CUE under `internal/*`.
 - Workflow, skills, and command rules are no longer only embedded in prose.
 
-## Milestone 3: Generate Codex-facing repo artifacts
+## Milestone 3: Define Codex-facing projections
 
 Deliverables:
 
-- Generate `.codex/frames/repo-frame.md`.
-- Generate `.codex/frames/skills.md`.
-- Generate `.codex/frames/workflow.md`.
-- Generate `.codex/generated/skill-index.json`.
-- Generate `.codex/rules/default.rules`.
+- Add CUE values for:
+  - `repoFrame`
+  - `skillFrame`
+  - `workflowFrame`
+  - `skillIndex`
+  - `defaultRules`
+- Keep these as CUE-rendered values first, not files.
+- Ensure `cue export` can inspect each projection independently.
 
 Exit criteria:
 
-- Codex can answer inventory and workflow questions from generated surfaces first.
-- The generated files are reproducible from CUE.
-- The boot contract can point to the generated outputs instead of duplicating policy.
+```sh
+cue export ./internal/agent/codex -e repoFrame --out text
+cue export ./internal/agent/codex -e skillFrame --out text
+cue export ./internal/agent/codex -e workflowFrame --out text
+cue export ./internal/agent/codex -e skillIndex --out json
+cue export ./internal/agent/codex -e defaultRules --out text
+```
 
 ## Milestone 4: Add regeneration entrypoints
 
@@ -79,11 +87,19 @@ Deliverables:
 - Add `internal/agent/gen.cue`.
 - Wire generation through `go generate`.
 - Use `cue exp writefs` as the bulk file materialization mechanism.
+- Generate:
+  - `.codex/frames/repo-frame.md`
+  - `.codex/frames/skills.md`
+  - `.codex/frames/workflow.md`
+  - `.codex/generated/skill-index.json`
+  - `.codex/rules/default.rules`
 
 Exit criteria:
 
-- A single generation command refreshes all generated repo artifacts.
-- Stale generated files are detectable by diff.
+```sh
+go generate ./internal/agent
+git diff -- .codex/frames .codex/generated .codex/rules
+```
 
 ## Milestone 5: Add freshness and validation checks
 
@@ -136,8 +152,8 @@ Exit criteria:
 
 1. Minimal `cue.mod/module.cue`
 2. Internal CUE authority graph
-3. Generated Codex frames and indexes
-4. `go generate` plus `cue exp writefs`
+3. Codex-facing projection values
+4. Materialized generated artifacts
 5. Freshness checks in CI
 6. Discovery tightening
 7. Optional MCP promotion
@@ -156,6 +172,7 @@ Do not start with:
 When this is complete, the repo behaves like a GitOps-style app:
 
 - CUE declares intent.
-- Generation renders the concrete surfaces.
+- Projection values render the concrete surfaces.
+- Generation materializes the concrete surfaces.
 - Validation checks drift.
 - Codex consumes the compact outputs instead of crawling first.
