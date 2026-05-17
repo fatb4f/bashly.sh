@@ -1,51 +1,36 @@
-name: cli
-help: Sample application
-version: 0.1.0
+name: session
+help: Session Lock and Unlock Manager
+version: 1.0.0
 
 environment_variables:
-- name: api_key
-  help: Set your API key
+- name: XDG_SESSION_ID
+  help: The current session ID (used by loginctl)
+- name: XDG_CONFIG_HOME
+  help: Configuration directory (used to find hyprlock config)
+- name: XDG_RUNTIME_DIR
+  help: Runtime directory (used for pomodoro break state)
 
 commands:
-- name: download
-  alias: d
-  help: Download a file
-
-  args:
-  - name: source
-    required: true
-    help: URL to download from
-  - name: target
-    help: "Target filename (default: same as source)"
-
+- name: lock
+  help: Lock the session
+  description: |
+    Lock the session using loginctl or by running the screen locker.
+    
+    If no flags are provided, it requests a lock via loginctl.
   flags:
-  - long: --force
-    short: -f
-    help: Overwrite existing files
-
+  - long: --request
+    help: Request loginctl to lock the session
+  - long: --run-locker
+    help: Run the hyprlock screen locker directly
   examples:
-  - cli download example.com
-  - cli download example.com ./output -f
+  - session lock
+  - session lock --request
+  - session lock --run-locker
 
-  environment_variables:
-  - name: default_target_location
-    help: Set the default location to download to
-
-- name: upload
-  alias: u
-  help: Upload a file
-  args:
-  - name: source
-    required: true
-    help: File to upload
-
-  flags:
-  - long: --user
-    short: -u
-    arg: user
-    help: Username to use for logging in
-    required: true
-  - long: --password
-    short: -p
-    arg: password
-    help: Password to use for logging in
+- name: unlock
+  help: Unlock the session and perform cleanup
+  description: |
+    Unlocks the session and performs cleanup tasks like stopping the
+    halt timer and handling pomodoro break logic.
+  examples:
+  - session unlock
