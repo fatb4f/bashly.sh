@@ -31,6 +31,6 @@ boot_contract: """
 repo_boot_projection: base.#Projection & {
 	name: "repoFrame"
 	format: "text"
-	source: "internal/agent/repo/repo.cue"
+	source: "agent-sdk/cue/profiles/bash-cli/repo.cue"
 	value: boot_contract
 }

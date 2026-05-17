@@ -4,9 +4,9 @@ repos:
   - repo: local
     hooks:
       - id: bashly-pre-commit-ci
-        name: bashly source pre-commit ci
-        entry: scripts/pre-commit-ci.sh --mode=write
+        name: agentctl generate
+        entry: go run github.com/fatb4f/agent-sdk/cmd/agentctl generate --project-root .
         language: system
         pass_filenames: false
         stages: [pre-commit]
-        files: ^(src/.*\.sh|src/bashly\.yml|bashly\.yml|bashly-settings\.yml|settings\.yml)$
+        files: ^(agent\.cue|meta/agent/.*|agent-sdk/.*\.(cue|go|tmpl)|go\.work)$

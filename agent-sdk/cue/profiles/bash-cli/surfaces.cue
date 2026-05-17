@@ -8,8 +8,8 @@ surfaces: {
 			name: "repo-frame"
 			kind: "frame"
 			input: "generationData.repoFrame"
-			template: "internal/agent/templates/repo-frame.md.tmpl"
-			output: ".codex/frames/repo-frame.md"
+			template: "agent-sdk/templates/repo-frame.md.tmpl"
+			output: "meta/agent/frames/repo-frame.md"
 			format: "markdown"
 			materializer: "gomplate"
 			edit_policy: "never-hand-edit"
@@ -18,8 +18,8 @@ surfaces: {
 			name: "skills-frame"
 			kind: "frame"
 			input: "generationData.skillFrame"
-			template: "internal/agent/templates/skills.md.tmpl"
-			output: ".codex/frames/skills.md"
+			template: "agent-sdk/templates/skills.md.tmpl"
+			output: "meta/agent/frames/skills.md"
 			format: "markdown"
 			materializer: "gomplate"
 			edit_policy: "never-hand-edit"
@@ -28,8 +28,8 @@ surfaces: {
 			name: "workflow-frame"
 			kind: "frame"
 			input: "generationData.workflowFrame"
-			template: "internal/agent/templates/workflow.md.tmpl"
-			output: ".codex/frames/workflow.md"
+			template: "agent-sdk/templates/workflow.md.tmpl"
+			output: "meta/agent/frames/workflow.md"
 			format: "markdown"
 			materializer: "gomplate"
 			edit_policy: "never-hand-edit"
@@ -38,7 +38,7 @@ surfaces: {
 			name: "skill-index"
 			kind: "index"
 			input: "skillIndex"
-			output: ".codex/generated/skill-index.json"
+			output: "meta/agent/generated/skill-index.json"
 			format: "json"
 			materializer: "cue-export"
 			edit_policy: "never-hand-edit"
@@ -47,7 +47,7 @@ surfaces: {
 			name: "surface-index"
 			kind: "index"
 			input: "surfaceIndex"
-			output: ".codex/generated/surface-index.json"
+			output: "meta/agent/generated/surface-index.json"
 			format: "json"
 			materializer: "cue-export"
 			edit_policy: "never-hand-edit"
@@ -56,8 +56,8 @@ surfaces: {
 			name: "default-rules"
 			kind: "rule"
 			input: "generationData.commandRules"
-			template: "internal/agent/templates/default.rules.tmpl"
-			output: ".codex/rules/default.rules"
+			template: "agent-sdk/templates/default.rules.tmpl"
+			output: "meta/agent/rules/default.rules"
 			format: "text"
 			materializer: "gomplate"
 			edit_policy: "never-hand-edit"
@@ -66,20 +66,20 @@ surfaces: {
 
 	future_frames: [
 		{
-			path: ".codex/frames/repo-frame.md"
-			source: "internal/agent/templates/repo-frame.md.tmpl"
+			path: "meta/agent/frames/repo-frame.md"
+			source: "agent-sdk/templates/repo-frame.md.tmpl"
 			edit_policy: "never-hand-edit"
 			kind: "frame"
 		},
 		{
-			path: ".codex/frames/skills.md"
-			source: "internal/agent/templates/skills.md.tmpl"
+			path: "meta/agent/frames/skills.md"
+			source: "agent-sdk/templates/skills.md.tmpl"
 			edit_policy: "never-hand-edit"
 			kind: "frame"
 		},
 		{
-			path: ".codex/frames/workflow.md"
-			source: "internal/agent/templates/workflow.md.tmpl"
+			path: "meta/agent/frames/workflow.md"
+			source: "agent-sdk/templates/workflow.md.tmpl"
 			edit_policy: "never-hand-edit"
 			kind: "frame"
 		},
@@ -87,14 +87,14 @@ surfaces: {
 
 	future_indexes: [
 		{
-			path: ".codex/generated/skill-index.json"
-			source: "internal/agent/codex/indexes.cue"
+			path: "meta/agent/generated/skill-index.json"
+			source: "agent-sdk/cue/adapters/codex/indexes.cue"
 			edit_policy: "never-hand-edit"
 			kind: "index"
 		},
 		{
-			path: ".codex/generated/surface-index.json"
-			source: "internal/agent/codex/indexes.cue"
+			path: "meta/agent/generated/surface-index.json"
+			source: "agent-sdk/cue/adapters/codex/indexes.cue"
 			edit_policy: "never-hand-edit"
 			kind: "index"
 		},
@@ -102,8 +102,8 @@ surfaces: {
 
 	future_rules: [
 		{
-			path: ".codex/rules/default.rules"
-			source: "internal/agent/templates/default.rules.tmpl"
+			path: "meta/agent/rules/default.rules"
+			source: "agent-sdk/templates/default.rules.tmpl"
 			edit_policy: "never-hand-edit"
 			kind: "rule"
 		},

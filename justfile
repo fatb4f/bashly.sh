@@ -16,7 +16,7 @@ agent-doctor:
   go run github.com/fatb4f/agent-sdk/cmd/agentctl doctor --project-root .
 
 source-check:
-  scripts/pre-commit-ci.sh --mode=check --project-root .
+  go run github.com/fatb4f/agent-sdk/cmd/agentctl check-generated --project-root .
 
 source-write:
-  scripts/pre-commit-ci.sh --mode=write --project-root .
+  go run github.com/fatb4f/agent-sdk/cmd/agentctl generate --project-root .
