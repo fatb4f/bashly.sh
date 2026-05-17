@@ -14,6 +14,27 @@ skills: {
 		optional_tools: ["ruby", "argc", "bash-ast", "tree-sitter", "sem"]
 		triggers: ["bashly", "generated cli", "source script", "bashly.yml"]
 		delegates: ["shell-validation", "bats-core", "shellspec"]
+		status: "active"
+	}
+
+	argc: base.#Skill & {
+		id: "argc"
+		path: ".agents/skills/argc"
+		entrypoint: ".agents/skills/argc/SKILL.md"
+		purpose: "Argc annotation context and argv-guidance for shell source work."
+		required_tools: ["argc"]
+		triggers: ["argc", "argv context", "annotation context"]
+		status: "active"
+	}
+
+	"bash-ast": base.#Skill & {
+		id: "bash-ast"
+		path: ".agents/skills/bash-ast"
+		entrypoint: ".agents/skills/bash-ast/SKILL.md"
+		purpose: "Bash AST evidence and structural inspection for shell source."
+		optional_tools: ["bash-ast", "ast-bash"]
+		triggers: ["bash-ast", "ast-bash", "parse tree", "structural evidence"]
+		status: "active"
 	}
 
 	"shell-validation": base.#Skill & {
@@ -21,9 +42,9 @@ skills: {
 		path: ".agents/skills/shell-validation"
 		entrypoint: ".agents/skills/shell-validation/SKILL.md"
 		purpose: "Shell normalization, formatting, linting, and local CI gate interpretation."
-		required_tools: ["shfmt", "shellcheck"]
-		optional_tools: ["shellharden"]
+		required_tools: ["shellharden", "shfmt", "shellcheck"]
 		triggers: ["shellharden", "shfmt", "shellcheck", "format", "lint"]
+		status: "active"
 	}
 
 	"bats-core": base.#Skill & {
@@ -34,6 +55,16 @@ skills: {
 		optional_tools: ["bats"]
 		status: "deferred"
 		triggers: ["bats", "behavior tests"]
+	}
+
+	"shellspec": base.#Skill & {
+		id: "shellspec"
+		path: ".agents/skills/shellspec"
+		entrypoint: ".agents/skills/shellspec/SKILL.md"
+		purpose: "ShellSpec source-level Bash behavior tests."
+		optional_tools: ["shellspec"]
+		status: "deferred"
+		triggers: ["shellspec", "behavior tests", "source-level tests"]
 	}
 
 	"tree-sitter": base.#Skill & {
@@ -56,6 +87,22 @@ skillIndex: [...base.#SkillIndexEntry] & [
 		triggers: skills.bashly.triggers
 	},
 	{
+		id: skills.argc.id
+		path: skills.argc.path
+		entrypoint: skills.argc.entrypoint
+		purpose: skills.argc.purpose
+		status: skills.argc.status
+		triggers: skills.argc.triggers
+	},
+	{
+		id: skills."bash-ast".id
+		path: skills."bash-ast".path
+		entrypoint: skills."bash-ast".entrypoint
+		purpose: skills."bash-ast".purpose
+		status: skills."bash-ast".status
+		triggers: skills."bash-ast".triggers
+	},
+	{
 		id: skills."shell-validation".id
 		path: skills."shell-validation".path
 		entrypoint: skills."shell-validation".entrypoint
@@ -70,6 +117,14 @@ skillIndex: [...base.#SkillIndexEntry] & [
 		purpose: skills."bats-core".purpose
 		status: skills."bats-core".status
 		triggers: skills."bats-core".triggers
+	},
+	{
+		id: skills.shellspec.id
+		path: skills.shellspec.path
+		entrypoint: skills.shellspec.entrypoint
+		purpose: skills.shellspec.purpose
+		status: skills.shellspec.status
+		triggers: skills.shellspec.triggers
 	},
 	{
 		id: skills."tree-sitter".id

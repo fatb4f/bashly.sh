@@ -8,16 +8,19 @@ surfaces: {
 			path: ".codex/frames/repo-frame.md"
 			source: "internal/agent/codex/frames.cue"
 			edit_policy: "never-hand-edit"
+			kind: "frame"
 		},
 		{
 			path: ".codex/frames/skills.md"
 			source: "internal/agent/codex/frames.cue"
 			edit_policy: "never-hand-edit"
+			kind: "frame"
 		},
 		{
 			path: ".codex/frames/workflow.md"
 			source: "internal/agent/codex/frames.cue"
 			edit_policy: "never-hand-edit"
+			kind: "frame"
 		},
 	]
 
@@ -26,6 +29,7 @@ surfaces: {
 			path: ".codex/generated/skill-index.json"
 			source: "internal/agent/codex/indexes.cue"
 			edit_policy: "never-hand-edit"
+			kind: "index"
 		},
 	]
 
@@ -34,8 +38,19 @@ surfaces: {
 			path: ".codex/rules/default.rules"
 			source: "internal/agent/codex/rules.cue"
 			edit_policy: "never-hand-edit"
+			kind: "rule"
 		},
 	]
 }
 
-generated_surfaces: [...base.#GeneratedSurface] & surfaces.future_frames
+generated_surfaces: [...base.#GeneratedSurface] & [
+	for s in surfaces.future_frames {
+		s
+	},
+	for s in surfaces.future_indexes {
+		s
+	},
+	for s in surfaces.future_rules {
+		s
+	},
+]

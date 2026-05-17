@@ -1,3 +1,6 @@
+// Transitional compatibility schema.
+// Canonical workflow authority lives in internal/agent/repo/workflow.cue.
+// Keep this file aligned with the repo graph until Dynamic/Regen lands.
 package bashly_workflow
 
 #SkillID: "bashly" | "shell-validation" | "bats-core" | "shellspec" | "argc" | "bash-ast" | "tree-sitter"
@@ -6,7 +9,7 @@ package bashly_workflow
 #Authority: "advisory" | "blocking"
 #MutationMode: "write" | "check"
 #Blocker: "unsafe_write_target" | "generated_bash_edited" | "shellharden_failed" | "shfmt_failed" | "shellcheck_source_failed" | "bashly_generate_failed"
-#Deferred: "shellcheck_generated" | "bats-core" | "shellspec"
+#Deferred: "lint_generated" | "bats-core" | "shellspec"
 
 workflow: {
 	name: "bashly-source-edit"
@@ -119,7 +122,7 @@ workflow: {
 			"bashly_generate_failed",
 		]
 		deferred: [...#Deferred] & [
-			"shellcheck_generated",
+			"lint_generated",
 			"bats-core",
 			"shellspec",
 		]

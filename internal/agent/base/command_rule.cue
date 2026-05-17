@@ -1,8 +1,11 @@
 package base
 
+#CommandRuleKind: "prefix" | "exact"
+#CommandDecision: "allow" | "prompt" | "forbidden"
+
 #CommandRule: {
-	kind!: "prefix" | "exact"
+	kind!: #CommandRuleKind
 	pattern!: [...string]
-	decision!: "allow" | "prompt" | "forbidden"
+	decision!: #CommandDecision
 	justification!: string
 }

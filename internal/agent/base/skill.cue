@@ -1,6 +1,8 @@
 package base
 
-#SkillID: string
+#SkillID: "argc" | "bash-ast" | "bashly" | "bats-core" | "shell-validation" | "shellspec" | "tree-sitter"
+#SkillStatus: "active" | "deferred" | "experimental" | "deprecated"
+#SkillLoadPolicy: "on_select" | "always" | "never"
 
 #Skill: {
 	id!: #SkillID
@@ -13,8 +15,8 @@ package base
 	triggers?: [...string]
 	delegates?: [...#SkillID]
 
-	status: *"active" | "deferred" | "experimental" | "deprecated"
-	load_policy: *"on_select" | "always" | "never"
+	status: *"active" | #SkillStatus
+	load_policy: *"on_select" | #SkillLoadPolicy
 }
 
 #SkillIndexEntry: {
@@ -22,6 +24,6 @@ package base
 	path!: string
 	entrypoint!: string
 	purpose!: string
-	status!: "active" | "deferred" | "experimental" | "deprecated"
+	status!: #SkillStatus
 	triggers?: [...string]
 }

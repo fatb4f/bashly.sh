@@ -9,8 +9,8 @@ workflow: base.#Workflow & {
 			id: "inspect"
 			tool: "bashly"
 			mode: "check"
-			after: ""
 			mutates_source: false
+			after: ""
 			blocks_on: ""
 		},
 		{
@@ -22,12 +22,45 @@ workflow: base.#Workflow & {
 			blocks_on: "generated_bash_edited"
 		},
 		{
-			id: "verify_source"
+			id: "format_shellharden"
+			tool: "shell-validation"
+			mode: "write"
+			mutates_source: true
+			after: "edit_source"
+			blocks_on: "shellharden_failed"
+		},
+		{
+			id: "format_shfmt"
+			tool: "shell-validation"
+			mode: "write"
+			mutates_source: true
+			after: "format_shellharden"
+			blocks_on: "shfmt_failed"
+		},
+		{
+			id: "lint_source_shellcheck"
 			tool: "shell-validation"
 			mode: "check"
-			after: "edit_source"
+			after: "format_shfmt"
 			mutates_source: false
 			blocks_on: "shellcheck_source_failed"
 		},
+		{
+			id: "generate_bashly"
+			tool: "bashly"
+			mode: "generate"
+			after: "lint_source_shellcheck"
+			mutates_source: false
+			blocks_on: "bashly_generate_failed"
+		},
+		{
+			id: "report"
+			tool: "report"
+			mode: "check"
+			after: "generate_bashly"
+			mutates_source: false
+			blocks_on: ""
+		},
 	]
+	deferred: ["lint_generated", "bats-core", "shellspec"]
 }
