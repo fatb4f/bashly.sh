@@ -49,9 +49,14 @@ workflow: base.#Workflow & {
 			id: "generate_bashly"
 			tool: "bashly"
 			mode: "generate"
+			command: ["bashly", "generate"]
+			env: {
+				BASHLY_FORMATTER: "none"
+			}
 			after: "lint_source_shellcheck"
 			mutates_source: false
 			blocks_on: "bashly_generate_failed"
+			source_mutation_guard: true
 		},
 		{
 			id: "report"

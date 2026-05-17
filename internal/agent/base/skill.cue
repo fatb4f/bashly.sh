@@ -25,5 +25,8 @@ package base
 	entrypoint!: string
 	purpose!: string
 	status!: #SkillStatus
+	load_policy?: #SkillLoadPolicy
 	triggers?: [...string]
+	required_tools?: [...string]
+	optional_tools?: [...string]
 }

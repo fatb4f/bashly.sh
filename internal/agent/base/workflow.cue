@@ -15,7 +15,10 @@ package base
 	id!: #PhaseID
 	tool!: string
 	mode!: #PhaseMode
+	command?: [...string]
+	env?: [string]: string
 	mutates_source: bool | *false
 	after?: #PhaseID | ""
 	blocks_on?: #Blocker | ""
+	source_mutation_guard?: bool
 }

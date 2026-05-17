@@ -40,5 +40,10 @@ workflowFrame: strings.Join([
 	"",
 	"Deferred: \(strings.Join(repo.workflow.deferred, ", "))",
 	"",
+	"generate_bashly.command: `\(strings.Join(repo.workflow.phases[5].command, " "))`",
+	"generate_bashly.env.BASHLY_FORMATTER: `\(repo.workflow.phases[5].env.BASHLY_FORMATTER)`",
+	"generate_bashly.source_mutation_guard: `\(repo.workflow.phases[5].source_mutation_guard)`",
+	"generate_bashly.blocks_on: `\(repo.workflow.phases[5].blocks_on)`",
+	"",
 	"Validation order is shellharden -> shfmt -> shellcheck source -> bashly generate with Bashly formatting disabled -> report.",
 ], "\n")

@@ -37,6 +37,8 @@ bashly generate with Bashly formatting disabled
 CI report
 ```
 
+The repo-owned static validation entrypoint is `scripts/check-agent-static.sh`. It is the named INIT / STATIC gate and includes `surfaceIndex` alongside the other Codex-facing projections.
+
 `lint_generated` is currently deferred. Bats and ShellSpec are deferred unless a task explicitly activates them.
 
 ## Optional frontage
