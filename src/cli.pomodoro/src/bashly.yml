@@ -1,51 +1,50 @@
-name: cli
-help: Sample application
+name: pomodoroctl
+help: Small systemd-user backed Pomodoro state machine
 version: 0.1.0
 
-environment_variables:
-- name: api_key
-  help: Set your API key
-
 commands:
-- name: download
-  alias: d
-  help: Download a file
-
-  args:
-  - name: source
-    required: true
-    help: URL to download from
-  - name: target
-    help: "Target filename (default: same as source)"
-
+- name: start
+  help: Start or restart the Pomodoro cycle at a work interval
+  
+- name: stop
+  help: Stop timers and reset state
+  alias: reset
   flags:
-  - long: --force
-    short: -f
-    help: Overwrite existing files
+  - name: --keep-anchor
+    help: Keep the anchor cycle service running
 
-  examples:
-  - cli download example.com
-  - cli download example.com ./output -f
+- name: status
+  help: Print state plus related systemd units/timers
 
-  environment_variables:
-  - name: default_target_location
-    help: Set the default location to download to
+- name: skip
+  help: Advance the current phase immediately
+  alias: next
 
-- name: upload
-  alias: u
-  help: Upload a file
-  args:
-  - name: source
-    required: true
-    help: File to upload
+- name: enter-work
+  help: "Internal: enter work phase and arm work timer"
+  alias: start-work
 
-  flags:
-  - long: --user
-    short: -u
-    arg: user
-    help: Username to use for logging in
-    required: true
-  - long: --password
-    short: -p
-    arg: password
-    help: Password to use for logging in
+- name: finish-work
+  help: "Internal: work timer expired; enter short/long break"
+  alias: [work-done, work-expired]
+
+- name: finish-break
+  help: "Internal: break timer expired; enter next work phase"
+  alias: [break-done, break-expired]
+
+environment_variables:
+- name: POMODORO_WORK_SECONDS
+  help: Work interval duration in seconds
+  default: 1500
+- name: POMODORO_SHORT_BREAK_SECONDS
+  help: Short break duration in seconds
+  default: 300
+- name: POMODORO_LONG_BREAK_SECONDS
+  help: Long break duration in seconds
+  default: 1800
+- name: POMODORO_LONG_BREAK_EVERY
+  help: Number of cycles before a long break
+  default: 4
+- name: POMODOROCTL_NO_SYSTEMD
+  help: If set to 1, do not interact with systemd
+  default: 0
