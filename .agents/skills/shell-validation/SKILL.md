@@ -1,57 +1,39 @@
 ---
 name: shell-validation
-description: Use for shell syntax, formatting, and hardening validation such as shellcheck, shfmt, and shellharden. Owns validation commands and diagnostic interpretation, not Bashly domain semantics.
-compatibility: Repo-local validation skill for shell implementation and test surfaces.
+description: "Use for local shell CI validation: shellharden, shfmt, shellcheck, and pre-commit formatting/lint gates."
+compatibility: "Repo-local validation skill for Bash source scripts and shell test surfaces."
 metadata:
-  version: "1.0"
+  version: "2.0"
   owns:
-    - shellcheck validation
-    - shfmt validation
-    - shellharden validation
-    - shell syntax checks
+    - shellharden normalization
+    - shfmt formatting
+    - shellcheck source linting
+    - local CI gate interpretation
 ---
 
 # Shell validation
 
-Use this skill when the task is about shell validation, formatting, or
-hardening.
+Use this skill for shell normalization, formatting, linting, and local CI gate interpretation.
 
 ## Contract
 
-Validation means checking shell code and reporting actionable diagnostics.
+The local CI order is:
 
 ```txt
-shell source
-  -> syntax check
-  -> shellcheck
-  -> shfmt or shellharden as applicable
-  -> validation result
+shellharden
+shfmt
+shellcheck source
 ```
 
-This skill owns the validation surface, not Bashly semantics or test
-authoring.
+This skill validates shell source. It does not decide Bashly CLI intent.
 
-## Scope
+## Pre-commit posture
 
-Use this skill for:
+Deterministic formatting and normalization may be auto-staged by a pre-commit workflow when limited to source files.
 
-- shell syntax validation
-- shellcheck runs and diagnostic interpretation
-- shfmt runs and formatting checks
-- shellharden runs and quoting/hardening checks
-- headless shell probes when they are purely validation-oriented
+Only the validation gate decides whether the commit can proceed.
 
-Do not use this skill to decide Bashly CLI intent, selector rules, or test
-semantics.
+## Deferred surfaces
 
-## Validation posture
-
-Prefer repository adapters when present:
-
-```sh
-./bin/check-requirements
-./bin/bashly-check <project-root>
-./bin/bashly-smoke <project-root>
-```
-
-Use direct tools only when an adapter is missing or insufficient.
+Generated-output linting is deferred unless explicitly activated.
+Bats and ShellSpec tests are deferred unless explicitly activated.

@@ -1,0 +1,12 @@
+minimum_pre_commit_version: "3.0.0"
+
+repos:
+  - repo: local
+    hooks:
+      - id: bashly-pre-commit-ci
+        name: bashly source pre-commit ci
+        entry: scripts/pre-commit-ci.sh --mode=write
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        files: ^(src/.*\.sh|src/bashly\.yml|bashly\.yml|bashly-settings\.yml|settings\.yml)$
