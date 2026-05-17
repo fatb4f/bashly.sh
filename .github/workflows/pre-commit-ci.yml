@@ -29,6 +29,12 @@ jobs:
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install CUE and gomplate
+        run: |
+          go install cuelang.org/go/cmd/cue@v0.16.1
+          go install github.com/hairyhenderson/gomplate/v3/cmd/gomplate@latest
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
       - name: Install shell validation tools
         run: |
           sudo apt-get update
@@ -38,6 +44,21 @@ jobs:
           gem install bashly --no-document
           echo "$HOME/go/bin" >> "$GITHUB_PATH"
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Check agent static surfaces
+        run: scripts/check-agent-static.sh
+
+      - name: Check agent generated surfaces
+        run: scripts/check-agent-generated.sh
+
+      - name: Check agentgen targets
+        run: go run ./cmd/agentgen targets --project-root . >/dev/null
+
+      - name: Check agentgen vet
+        run: go run ./cmd/agentgen vet --project-root .
 
       - name: Run pre-commit CI workflow
         run: scripts/pre-commit-ci.sh --mode=check

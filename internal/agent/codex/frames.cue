@@ -11,6 +11,7 @@ skill_frame: skillFrame
 workflow_frame: workflowFrame
 
 repoFrame: repo.repo_boot_projection.value
+generateBashly: repo.workflow.phases[5]
 
 skillFrame: strings.Join([
 	"# Project-local skills",
@@ -40,10 +41,10 @@ workflowFrame: strings.Join([
 	"",
 	"Deferred: \(strings.Join(repo.workflow.deferred, ", "))",
 	"",
-	"generate_bashly.command: `\(strings.Join(repo.workflow.phases[5].command, " "))`",
-	"generate_bashly.env.BASHLY_FORMATTER: `\(repo.workflow.phases[5].env.BASHLY_FORMATTER)`",
-	"generate_bashly.source_mutation_guard: `\(repo.workflow.phases[5].source_mutation_guard)`",
-	"generate_bashly.blocks_on: `\(repo.workflow.phases[5].blocks_on)`",
+	"generate_bashly.command: `\(strings.Join(generateBashly.command, " "))`",
+	"generate_bashly.env.BASHLY_FORMATTER: `\(generateBashly.env.BASHLY_FORMATTER)`",
+	"generate_bashly.source_mutation_guard: `\(generateBashly.source_mutation_guard)`",
+	"generate_bashly.blocks_on: `\(generateBashly.blocks_on)`",
 	"",
 	"Validation order is shellharden -> shfmt -> shellcheck source -> bashly generate with Bashly formatting disabled -> report.",
 ], "\n")

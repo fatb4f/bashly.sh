@@ -11,8 +11,8 @@ const (
 type GenerationMaterializer string
 
 const (
-	GenerationMaterializerGomplate   GenerationMaterializer = "gomplate"
-	GenerationMaterializerCueExport   GenerationMaterializer = "cue-export"
+	GenerationMaterializerGomplate  GenerationMaterializer = "gomplate"
+	GenerationMaterializerCueExport GenerationMaterializer = "cue-export"
 )
 
 type GenerationFormat string
@@ -24,13 +24,13 @@ const (
 )
 
 type GenerationTarget struct {
-	Name          string                `json:"name"`
-	Kind          GenerationTargetKind  `json:"kind"`
-	Input         string                `json:"input"`
-	Schema        string                `json:"schema,omitempty"`
-	Template      string                `json:"template,omitempty"`
-	Output        string                `json:"output"`
-	Format        GenerationFormat      `json:"format"`
-	Materializer  GenerationMaterializer `json:"materializer"`
-	EditPolicy    string                `json:"edit_policy"`
+	Name         string                 `json:"name"`
+	Kind         GenerationTargetKind   `json:"kind"`
+	Input        string                 `json:"input"`
+	Schema       string                 `json:"schema,omitempty"`
+	Template     string                 `json:"template,omitempty"`
+	Output       string                 `json:"output"`
+	Format       GenerationFormat       `json:"format"`
+	Materializer GenerationMaterializer `json:"materializer"`
+	EditPolicy   string                 `json:"edit_policy"`
 }

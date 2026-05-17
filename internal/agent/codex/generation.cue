@@ -34,72 +34,8 @@ generationData: {
 		source_of_truth: "internal/agent/repo/workflow.cue"
 		validation_order: "shellharden -> shfmt -> shellcheck source -> bashly generate with Bashly formatting disabled -> report."
 		deferred: repopkg.workflow.deferred
-		phases: [
-			{
-				id: "inspect"
-				tool: "bashly"
-				mode: "check"
-				mutates_source: false
-				after: ""
-				blocks_on: ""
-			},
-			{
-				id: "edit_source"
-				tool: "bashly"
-				mode: "write"
-				mutates_source: true
-				after: "inspect"
-				blocks_on: "generated_bash_edited"
-			},
-			{
-				id: "format_shellharden"
-				tool: "shell-validation"
-				mode: "write"
-				mutates_source: true
-				after: "edit_source"
-				blocks_on: "shellharden_failed"
-			},
-			{
-				id: "format_shfmt"
-				tool: "shell-validation"
-				mode: "write"
-				mutates_source: true
-				after: "format_shellharden"
-				blocks_on: "shfmt_failed"
-			},
-			{
-				id: "lint_source_shellcheck"
-				tool: "shell-validation"
-				mode: "check"
-				mutates_source: false
-				after: "format_shfmt"
-				blocks_on: "shellcheck_source_failed"
-			},
-			{
-				id: "generate_bashly"
-				tool: "bashly"
-				mode: "generate"
-				mutates_source: false
-				after: "lint_source_shellcheck"
-				blocks_on: "bashly_generate_failed"
-			},
-			{
-				id: "report"
-				tool: "report"
-				mode: "check"
-				mutates_source: false
-				after: "generate_bashly"
-				blocks_on: ""
-			},
-		]
-		generate_bashly: {
-			command: ["bashly", "generate"]
-			env: {
-				BASHLY_FORMATTER: "none"
-			}
-			source_mutation_guard: true
-			blocks_on: "bashly_generate_failed"
-		}
+		phases: repopkg.workflow.phases
+		generate_bashly: repopkg.workflow.phases[5]
 	}
 
 	commandRules: [

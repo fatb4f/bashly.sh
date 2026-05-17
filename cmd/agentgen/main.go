@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fatb4f/bashly.sh/internal/agentgen/cuegraph"
 	"github.com/fatb4f/bashly.sh/internal/agentgen/contract"
+	"github.com/fatb4f/bashly.sh/internal/agentgen/cuegraph"
 )
 
 func main() {
