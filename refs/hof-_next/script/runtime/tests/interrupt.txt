@@ -1,8 +1,0 @@
-skip
-[windows] skip
-
-signalcatcher &
-waitfile catchsignal
-interrupt
-wait
-stdout 'caught interrupt'

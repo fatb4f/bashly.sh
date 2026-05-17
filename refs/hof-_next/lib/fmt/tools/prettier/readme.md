@@ -1,3 +1,0 @@
-# upgrading deps
-
-`yarn upgrade`

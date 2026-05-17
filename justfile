@@ -4,19 +4,19 @@ default:
   just --list
 
 agent-entry:
-  cue eval ./internal/agent -e agentEntry
+  cue eval ./agent-sdk/profiles/bash-cli -e workflow
 
 discovery-frame:
-  cue export ./internal/agent/codex -e discoveryFrame --out text
+  cue export ./agent-sdk/codex -e discoveryFrame --out text
 
 static:
-  scripts/check-agent-static.sh
+  agent-sdk/scripts/check-agent-static.sh
 
 agent-generate:
-  scripts/agentgen-gomplate.sh
+  agent-sdk/scripts/generate.sh
 
 agent-check-generated:
-  scripts/check-agent-generated.sh
+  agent-sdk/scripts/check-agent-generated.sh
 
 source-check:
   scripts/pre-commit-ci.sh --mode=check --project-root .

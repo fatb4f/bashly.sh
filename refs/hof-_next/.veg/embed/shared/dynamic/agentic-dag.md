@@ -1,5 +1,0 @@
-- what the dag looks like
-- summary of each part's role
-- where you are, how you fit in
-- focus on goals
-- guide calling

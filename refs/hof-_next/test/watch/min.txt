@@ -1,4 +1,0 @@
-{{ range .users }}
-{{ yaml . }}
-
-{{ end }}

@@ -1,1 +1,0 @@
-{{ camelT .Name }} {{ .Type }}
