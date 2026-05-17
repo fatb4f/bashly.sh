@@ -20,7 +20,8 @@ It focuses on the `bashly.sh` repository and the artifacts it already owns.
 
 Deliverables:
 
-- Keep `AGENTS.md` as the tiny boot contract.
+- Keep `AGENTS.md` as a pointer only.
+- Use `cue.mod/` as the repo-local entry point.
 - Keep `schema/bashly_workflow.cue` as the source workflow authority.
 - Confirm the existing skill layout remains the local operating surface.
 
@@ -166,6 +167,8 @@ Do not start with:
 - A full control plane outside the repo
 - MCP as the primary source of truth
 - Generated `AGENTS.md` fragments as a first-class dependency
+
+`AGENTS.md` remains a pointer only; policy and discovery live in CUE.
 
 ## Success Shape
 
