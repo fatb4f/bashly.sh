@@ -12,6 +12,12 @@ discovery-frame:
 static:
   scripts/check-agent-static.sh
 
+agent-generate:
+  scripts/agentgen-gomplate.sh
+
+agent-check-generated:
+  scripts/check-agent-generated.sh
+
 source-check:
   scripts/pre-commit-ci.sh --mode=check --project-root .
 

@@ -1,0 +1,2 @@
+User file: 'I'm a userfile used as content in a template
+'

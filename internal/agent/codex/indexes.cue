@@ -21,6 +21,7 @@ skillIndex: [
 			entrypoint: s.entrypoint
 			purpose: s.purpose
 			status: s.status
+			load_policy: s.load_policy
 			triggers: s.triggers
 		}
 	}

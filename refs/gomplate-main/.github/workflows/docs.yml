@@ -1,0 +1,68 @@
+name: Docs Checks
+on:
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-func-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install gomplate
+        run: |
+          docker create --name gomplate hairyhenderson/gomplate
+          docker cp gomplate:/gomplate .
+          sudo mv gomplate /usr/local/bin
+      - name: Make sure function docs are up-to-date
+        run: |
+          make --always-make gen-func-docs GOOS= GOARCH= GO=echo
+          git diff --exit-code
+          if [ $? -ne 0 ]; then
+            echo "Function docs are out of date. Please run 'make gen-func-docs' locally and commit the changes."
+            exit 1
+          fi
+  muffet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hugo setup
+        uses: peaceiris/actions-hugo@v3.2.1
+        with:
+          # keep this in sync with netlify.toml
+          hugo-version: '0.160.1'
+      - uses: actions/checkout@v6
+      - name: Install muffet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release --repo raviqqe/muffet download -p muffet_linux_amd64.tar.gz
+          tar xvf muffet_linux_amd64.tar.gz muffet
+          sudo mv muffet /usr/local/bin
+      - name: Serve the site and check links
+        run: |
+          set -ex
+
+          cd docs
+          hugo --renderToMemory
+          hugo serve --watch=false --renderToMemory &
+          sleep 2
+
+          muffet http://127.0.0.1:1313 \
+            -r8 --max-connections-per-host=4 --buffer-size=8192 \
+            --exclude="https://github\.com.*" \
+            --exclude="https://docs\.aws.*" \
+            --exclude="https://linux.die\.net.*" \
+            --exclude="https://jqplay\.org.*" \
+            --exclude="https://json\.org.*" \
+            --exclude="https://goessner\.net.*" \
+            --exclude="http://opensource\.org.*" \
+            --exclude="https://en.wikipedia\.org.*" \
+            --exclude="https://developer\.hashicorp\.com.*" \
+            --exclude="https://helm\.sh.*" \
+            --exclude="https://pkg\.go\.dev.*" \
+            --exclude="https://invite.slack.golangbridge.org.*"
+
+          kill %1

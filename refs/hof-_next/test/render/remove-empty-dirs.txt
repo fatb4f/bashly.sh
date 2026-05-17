@@ -1,0 +1,46 @@
+exec hof mod tidy
+
+exec hof gen -t maybe=true
+exists out/always.txt
+exists out/dir/maybe.txt
+exists out/dir
+
+exec hof gen
+exists out/always.txt
+! exists out/dir/maybe.txt
+! exists out/dir
+
+-- cue.mod/module.cue --
+module: "hof.io/test"
+language: {
+	version: "v0.13.0"
+}
+deps: {
+	"github.com/hofstadter-io/schemas@v0": {
+		v: "v0.0.2"
+	}	
+}
+
+-- gen.cue --
+package main
+
+import "github.com/hofstadter-io/schemas/gen"
+
+g: gen.Generator & {
+	@gen()
+
+	maybe: bool | *false @tag(maybe,type=bool)
+
+	Outdir: "out"
+	ModuleName: ""
+
+	Out: [
+		{ TemplatePath: "always.txt", Filepath: "always.txt" },
+		if maybe { TemplatePath: "maybe.txt", Filepath: "dir/maybe.txt" },
+	]
+}
+
+-- templates/always.txt --
+I'm always generated
+-- templates/maybe.txt --
+I was generated too

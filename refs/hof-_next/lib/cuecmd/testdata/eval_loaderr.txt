@@ -1,0 +1,7 @@
+! exec hof eval non-existing .
+! stdout .
+cmp stderr golden.stderr
+
+-- golden.stderr --
+cannot determine package name for "non-existing"; set it explicitly with ':'
+standard library import path "non-existing" cannot be imported as a CUE package

@@ -19,26 +19,32 @@ USAGE
 mode="check"
 project_root="."
 
-for arg in "$@"; do
-  case "$arg" in
+while (($# > 0)); do
+  case "$1" in
     --mode=check) mode="check" ;;
     --mode=write) mode="write" ;;
     --mode=*)
-      mode="${arg#--mode=}"
+      mode="${1#--mode=}"
+      ;;
+    --project-root)
+      project_root="${2:?pre-commit-ci: missing value for --project-root}"
+      shift 2
+      continue
       ;;
     --project-root=*)
-      project_root="${arg#--project-root=}"
+      project_root="${1#--project-root=}"
       ;;
     --help|-h)
       usage
       exit 0
       ;;
     *)
-      printf 'pre-commit-ci: unknown argument: %s\n' "$arg" >&2
+      printf 'pre-commit-ci: unknown argument: %s\n' "$1" >&2
       usage >&2
       exit 2
       ;;
   esac
+  shift
 done
 
 case "$mode" in

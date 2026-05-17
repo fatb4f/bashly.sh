@@ -1,0 +1,582 @@
+---
+title: conversion functions
+menu:
+  main:
+    parent: functions
+---
+
+These are a collection of functions that mostly help converting from one type
+to another - generally from a `string` to something else, and vice-versa.
+
+## `conv.Bool`
+
+**Alias:** `bool`
+
+**Note:** See also [`conv.ToBool`](#convtobool) for a more flexible variant.
+
+Converts a true-ish string to a boolean. Can be used to simplify conditional statements based on environment variables or other text input.
+
+_<span class="release-check" data-tag="v0.2.0">Added in gomplate v0.2.0</span>_
+### Usage
+
+```
+conv.Bool in
+```
+```
+in | conv.Bool
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the input string |
+
+### Examples
+
+_`input.tmpl`:_
+```
+{{if bool (getenv "FOO")}}foo{{else}}bar{{end}}
+```
+
+```console
+$ gomplate < input.tmpl
+bar
+$ FOO=true gomplate < input.tmpl
+foo
+```
+
+## `conv.Default`
+
+**Alias:** `default`
+
+Provides a default value given an empty input. Empty inputs are `0` for numeric
+types, `""` for strings, `false` for booleans, empty arrays/maps, and `nil`.
+
+Note that this will not provide a default for the case where the input is undefined
+(i.e. referencing things like `.foo` where there is no `foo` field of `.`), but
+[`coll.Has`](../coll/#collhas) can be used for that.
+
+_<span class="release-check" data-tag="v2.5.0">Added in gomplate v2.5.0</span>_
+### Usage
+
+```
+conv.Default default in
+```
+```
+in | conv.Default default
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `default` | _(required)_ the default value |
+| `in` | _(required)_ the input |
+
+### Examples
+
+```console
+$ gomplate -i '{{ "" | default "foo" }} {{ "bar" | default "baz" }}'
+foo bar
+```
+
+## `conv.Join`
+
+**Alias:** `join`
+
+Concatenates the elements of an array to create a string. The separator string `sep` is placed between elements in the resulting string.
+
+_<span class="release-check" data-tag="v0.4.0">Added in gomplate v0.4.0</span>_
+### Usage
+
+```
+conv.Join in sep
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the array or slice |
+| `sep` | _(required)_ the separator |
+
+### Examples
+
+```console
+$ gomplate -i '{{ $a := coll.Slice 1 2 3 }}{{ join $a "-" }}'
+1-2-3
+```
+
+## `conv.URL`
+
+**Alias:** `urlParse`
+
+Parses a string as a URL for later use. Equivalent to [url.Parse](https://pkg.go.dev/net/url/#Parse)
+
+Any of `url.URL`'s methods can be called on the result.
+
+_<span class="release-check" data-tag="v2.0.0">Added in gomplate v2.0.0</span>_
+### Usage
+
+```
+conv.URL in
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the URL string to parse |
+
+### Examples
+
+_`input.tmpl`:_
+```
+{{ $u := conv.URL "https://example.com:443/foo/bar" }}
+The scheme is {{ $u.Scheme }}
+The host is {{ $u.Host }}
+The path is {{ $u.Path }}
+```
+
+```console
+$ gomplate < input.tmpl
+The scheme is https
+The host is example.com:443
+The path is /foo/bar
+```
+_Call `Redacted` to hide the password in the output:_
+```
+$ gomplate -i '{{ (conv.URL "https://user:supersecret@example.com").Redacted }}'
+https://user:xxxxx@example.com
+```
+
+## `conv.ParseInt`
+
+_**Note:**_ See [`conv.ToInt64`](#convtoint64) instead for a simpler and more flexible variant of this function.
+
+Parses a string as an int64. Equivalent to [strconv.ParseInt](https://pkg.go.dev/strconv/#ParseInt)
+
+_<span class="release-check" data-tag="v1.4.0">Added in gomplate v1.4.0</span>_
+### Usage
+
+```
+conv.ParseInt
+```
+
+
+### Examples
+
+_`input.tmpl`:_
+```
+{{ $val := conv.ParseInt (getenv "HEXVAL") 16 32 }}
+The value in decimal is {{ $val }}
+```
+
+```console
+$ HEXVAL=7C0 gomplate < input.tmpl
+
+The value in decimal is 1984
+```
+
+## `conv.ParseFloat`
+
+_**Note:**_ See [`conv.ToFloat64`](#convtofloat64) instead for a simpler and more flexible variant of this function.
+
+Parses a string as an float64 for later use. Equivalent to [strconv.ParseFloat](https://pkg.go.dev/strconv/#ParseFloat)
+
+_<span class="release-check" data-tag="v1.4.0">Added in gomplate v1.4.0</span>_
+### Usage
+
+```
+conv.ParseFloat
+```
+
+
+### Examples
+
+_`input.tmpl`:_
+```
+{{ $pi := conv.ParseFloat (getenv "PI") 64 }}
+{{- if (gt $pi 3.0) -}}
+pi is greater than 3
+{{- end }}
+```
+
+```console
+$ PI=3.14159265359 gomplate < input.tmpl
+pi is greater than 3
+```
+
+## `conv.ParseUint`
+
+Parses a string as an uint64 for later use. Equivalent to [strconv.ParseUint](https://pkg.go.dev/strconv/#ParseUint)
+
+_<span class="release-check" data-tag="v1.4.0">Added in gomplate v1.4.0</span>_
+### Usage
+
+```
+conv.ParseUint
+```
+
+
+### Examples
+
+_`input.tmpl`:_
+```
+{{ conv.ParseInt (getenv "BIG") 16 64 }} is max int64
+{{ conv.ParseUint (getenv "BIG") 16 64 }} is max uint64
+```
+
+```console
+$ BIG=FFFFFFFFFFFFFFFF gomplate < input.tmpl
+9223372036854775807 is max int64
+18446744073709551615 is max uint64
+```
+
+## `conv.Atoi`
+
+_**Note:**_ See [`conv.ToInt`](#convtoint) and [`conv.ToInt64`](#convtoint64) instead for simpler and more flexible variants of this function.
+
+Parses a string as an int for later use. Equivalent to [strconv.Atoi](https://pkg.go.dev/strconv/#Atoi)
+
+_<span class="release-check" data-tag="v1.4.0">Added in gomplate v1.4.0</span>_
+### Usage
+
+```
+conv.Atoi
+```
+
+
+### Examples
+
+_`input.tmpl`:_
+```
+{{ $number := conv.Atoi (getenv "NUMBER") }}
+{{- if (gt $number 5) -}}
+The number is greater than 5
+{{- else -}}
+The number is less than 5
+{{- end }}
+```
+
+```console
+$ NUMBER=21 gomplate < input.tmpl
+The number is greater than 5
+```
+
+## `conv.ToBool`
+
+Converts the input to a boolean value.
+Possible `true` values are: `1` or the strings `"t"`, `"true"`, or `"yes"`
+(any capitalizations). All other values are considered `false`.
+
+_<span class="release-check" data-tag="v2.7.0">Added in gomplate v2.7.0</span>_
+### Usage
+
+```
+conv.ToBool input
+```
+```
+input | conv.ToBool
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `input` | _(required)_ The input to convert |
+
+### Examples
+
+```console
+$ gomplate -i '{{ conv.ToBool "yes" }} {{ conv.ToBool true }} {{ conv.ToBool "0x01" }}'
+true true true
+$ gomplate -i '{{ conv.ToBool false }} {{ conv.ToBool "blah" }} {{ conv.ToBool 0 }}'
+false false false
+```
+
+## `conv.ToBools`
+
+Converts a list of inputs to an array of boolean values.
+Possible `true` values are: `1` or the strings `"t"`, `"true"`, or `"yes"`
+(any capitalizations). All other values are considered `false`.
+
+_<span class="release-check" data-tag="v2.7.0">Added in gomplate v2.7.0</span>_
+### Usage
+
+```
+conv.ToBools input
+```
+```
+input | conv.ToBools
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `input` | _(required)_ The input array to convert |
+
+### Examples
+
+```console
+$ gomplate -i '{{ conv.ToBools "yes" true "0x01" }}'
+[true true true]
+$ gomplate -i '{{ conv.ToBools false "blah" 0 }}'
+[false false false]
+```
+
+## `conv.ToInt64`
+
+Converts the input to an `int64` (64-bit signed integer).
+
+This function attempts to convert most types of input (strings, numbers,
+and booleans).
+
+Unconvertible inputs will result in errors.
+
+Floating-point numbers (with decimal points) are truncated.
+
+_<span class="release-check" data-tag="v2.2.0">Added in gomplate v2.2.0</span>_
+### Usage
+
+```
+conv.ToInt64 in
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the value to convert |
+
+### Examples
+
+```console
+$ gomplate -i '{{conv.ToInt64 "9223372036854775807"}}'
+9223372036854775807
+```
+```console
+$ gomplate -i '{{conv.ToInt64 "0x42"}}'
+66
+```
+```console
+$ gomplate -i '{{conv.ToInt64 true }}'
+1
+```
+
+## `conv.ToInt`
+
+Converts the input to an `int` (signed integer, 32- or 64-bit depending
+on platform). This is similar to [`conv.ToInt64`](#convtoint64) on 64-bit
+platforms, but is useful when input to another function must be provided
+as an `int`.
+
+Unconvertible inputs will result in errors.
+
+On 32-bit systems, given a number that is too large to fit in an `int`,
+the result is `-1`. This is done to protect against
+[CWE-190](https://cwe.mitre.org/data/definitions/190.html) and
+[CWE-681](https://cwe.mitre.org/data/definitions/681.html).
+
+See also [`conv.ToInt64`](#convtoint64).
+
+_<span class="release-check" data-tag="v2.2.0">Added in gomplate v2.2.0</span>_
+### Usage
+
+```
+conv.ToInt in
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the value to convert |
+
+### Examples
+
+```console
+$ gomplate -i '{{conv.ToInt "9223372036854775807"}}'
+9223372036854775807
+```
+```console
+$ gomplate -i '{{conv.ToInt "0x42"}}'
+66
+```
+```console
+$ gomplate -i '{{conv.ToInt true }}'
+1
+```
+
+## `conv.ToInt64s`
+
+Converts the inputs to an array of `int64`s.
+
+Unconvertible inputs will result in errors.
+
+This delegates to [`conv.ToInt64`](#convtoint64) for each input argument.
+
+_<span class="release-check" data-tag="v2.2.0">Added in gomplate v2.2.0</span>_
+### Usage
+
+```
+conv.ToInt64s in...
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in...` | _(required)_ the inputs to be converted |
+
+### Examples
+
+```console
+gomplate -i '{{ conv.ToInt64s true 0x42 "123,456.99" "1.2345e+3"}}'
+[1 66 123456 1234]
+```
+
+## `conv.ToInts`
+
+Converts the inputs to an array of `int`s.
+
+Unconvertible inputs will result in errors.
+
+This delegates to [`conv.ToInt`](#convtoint) for each input argument.
+
+_<span class="release-check" data-tag="v2.2.0">Added in gomplate v2.2.0</span>_
+### Usage
+
+```
+conv.ToInts in...
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in...` | _(required)_ the inputs to be converted |
+
+### Examples
+
+```console
+gomplate -i '{{ conv.ToInts true 0x42 "123,456.99" "1.2345e+3"}}'
+[1 66 123456 1234]
+```
+
+## `conv.ToFloat64`
+
+Converts the input to a `float64`.
+
+This function attempts to convert most types of input (strings, numbers,
+and booleans).
+
+Unconvertible inputs will result in errors.
+
+_<span class="release-check" data-tag="v2.2.0">Added in gomplate v2.2.0</span>_
+### Usage
+
+```
+conv.ToFloat64 in
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the value to convert |
+
+### Examples
+
+```console
+$ gomplate -i '{{ conv.ToFloat64 "8.233e-1"}}'
+0.8233
+$ gomplate -i '{{ conv.ToFloat64 "9,000.09"}}'
+9000.09
+```
+
+## `conv.ToFloat64s`
+
+Converts the inputs to an array of `float64`s.
+
+Unconvertible inputs will result in errors.
+
+This delegates to [`conv.ToFloat64`](#convtofloat64) for each input argument.
+
+_<span class="release-check" data-tag="v2.2.0">Added in gomplate v2.2.0</span>_
+### Usage
+
+```
+conv.ToFloat64s in...
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in...` | _(required)_ the inputs to be converted |
+
+### Examples
+
+```console
+$ gomplate -i '{{ conv.ToFloat64s true 0x42 "123,456.99" "1.2345e+3"}}'
+[1 66 123456.99 1234.5]
+```
+
+## `conv.ToString`
+
+Converts the input (of any type) to a `string`.
+
+The input will always be represented in _some_ way.
+
+_<span class="release-check" data-tag="v2.5.0">Added in gomplate v2.5.0</span>_
+### Usage
+
+```
+conv.ToString in
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in` | _(required)_ the value to convert |
+
+### Examples
+
+```console
+$ gomplate -i '{{ conv.ToString 0xFF }}'
+255
+$ gomplate -i '{{ dict "foo" "bar" | conv.ToString}}'
+map[foo:bar]
+$ gomplate -i '{{ conv.ToString nil }}'
+nil
+```
+
+## `conv.ToStrings`
+
+Converts the inputs (of any type) to an array of `string`s
+
+This delegates to [`conv.ToString`](#convtostring) for each input argument.
+
+_<span class="release-check" data-tag="v2.5.0">Added in gomplate v2.5.0</span>_
+### Usage
+
+```
+conv.ToStrings in...
+```
+
+### Arguments
+
+| name | description |
+|------|-------------|
+| `in...` | _(required)_ the inputs to be converted |
+
+### Examples
+
+```console
+$ gomplate -i '{{ conv.ToStrings nil 42 true 0xF (coll.Slice 1 2 3) }}'
+[nil 42 true 15 [1 2 3]]
+```

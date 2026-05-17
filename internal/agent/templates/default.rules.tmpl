@@ -1,0 +1,10 @@
+{{- range $i, $r := .data.commandRules }}
+{{- if $i }}
+
+{{- end }}
+{{ $r.kind }}_rule(
+    pattern = [{{ range $j, $p := $r.pattern }}{{ if $j }}, {{ end }}"{{ $p }}"{{ end }}],
+    decision = "{{ $r.decision }}",
+    justification = "{{ $r.justification }}",
+)
+{{- end }}

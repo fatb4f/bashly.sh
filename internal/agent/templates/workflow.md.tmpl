@@ -1,0 +1,18 @@
+# Workflow
+
+Source of truth: `internal/agent/repo/workflow.cue`
+
+| Phase | Tool | Mode | Mutates Source | After | Blocks On |
+|---|---|---|---:|---|---|
+{{- range .data.workflowFrame.phases }}
+| `{{ .id }}` | {{ .tool }} | {{ .mode }} | {{ .mutates_source }} | {{ .after }} | {{ .blocks_on }} |
+{{- end }}
+
+Deferred: {{ range $i, $v := .data.workflowFrame.deferred }}{{ if $i }}, {{ end }}{{ $v }}{{ end }}
+
+generate_bashly.command: `{{ range $i, $v := .data.workflowFrame.generate_bashly.command }}{{ if $i }} {{ end }}{{ $v }}{{ end }}`
+generate_bashly.env.BASHLY_FORMATTER: `{{ .data.workflowFrame.generate_bashly.env.BASHLY_FORMATTER }}`
+generate_bashly.source_mutation_guard: `{{ .data.workflowFrame.generate_bashly.source_mutation_guard }}`
+generate_bashly.blocks_on: `{{ .data.workflowFrame.generate_bashly.blocks_on }}`
+
+Validation order: {{ .data.workflowFrame.validation_order }}

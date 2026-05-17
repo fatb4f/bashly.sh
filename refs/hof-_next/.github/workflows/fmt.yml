@@ -1,0 +1,49 @@
+name: fmt
+"on":
+  - push
+env:
+  HOF_TELEMETRY_DISABLED: "1"
+jobs:
+  formatter:
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.formatter }}-${{ github.ref_name }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    environment: hof mod testing
+    strategy:
+      fail-fast: false
+      matrix:
+        formatter:
+          - prettier
+          - csharpier
+          - black
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Vars
+        id: vars
+        run: |-
+          SHA=${GITHUB_SHA::8}
+          TAG=$(git tag --points-at HEAD)
+          echo "HOF_FMT_VERSION=${TAG}" >> $GITHUB_ENV
+          if [ -z $TAG ]; then
+          	TAG=${SHA}
+          fi
+          echo "HOF_SHA=${SHA}" >> $GITHUB_ENV
+          echo "HOF_TAG=${TAG}" >> $GITHUB_ENV
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Set up Docker BuildX
+        uses: docker/setup-buildx-action@v3
+      - name: Build Image
+        uses: docker/build-push-action@v5
+        with:
+          context: formatters/tools/${{ matrix.formatter }}
+          file: formatters/tools/${{ matrix.formatter }}/Dockerfile.debian
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/hofstadter-io/fmt-${{ matrix.formatter }}:${{ env.HOF_SHA }},ghcr.io/hofstadter-io/fmt-${{ matrix.formatter }}:${{ env.HOF_TAG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    services: {}

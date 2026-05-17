@@ -1,0 +1,514 @@
+ns: coll
+title: collection functions
+preamble: |
+  These functions help manipulate and query collections of data, like lists (slices, or arrays) and maps (dictionaries).
+
+  #### Implementation Note
+  For the functions that return an array, a Go `[]any` is returned, regardless of whether or not the
+  input was a different type.
+funcs:
+  - name: coll.Dict
+    released: v3.2.0
+    alias: dict
+    description: |
+      Dict is a convenience function that creates a map with string keys.
+      Provide arguments as key/value pairs. If an odd number of arguments
+      is provided, the last is used as the key, and an empty string is
+      set as the value.
+
+      All keys are converted to strings.
+
+      This function is equivalent to [Sprig's `dict`](http://masterminds.github.io/sprig/dicts.html#dict)
+      function, as used in [Helm templates](https://helm.sh/docs/chart_template_guide/functions_and_pipelines/).
+
+      For creating more complex maps, see [`data.JSON`](../data/#datajson) or [`data.YAML`](../data/#datayaml).
+
+      For creating arrays, see [`coll.Slice`](#collslice).
+    arguments:
+      - name: in...
+        required: true
+        description: The key/value pairs
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Dict "name" "Frank" "age" 42 | data.ToYAML }}'
+        age: 42
+        name: Frank
+        $ gomplate -i '{{ dict 1 2 3 | toJSON }}'
+        {"1":2,"3":""}
+      - |
+        $ cat <<EOF| gomplate
+        {{ define "T1" }}Hello {{ .thing }}!{{ end -}}
+        {{ template "T1" (dict "thing" "world")}}
+        {{ template "T1" (dict "thing" "everybody")}}
+        EOF
+        Hello world!
+        Hello everybody!
+  - name: coll.Slice
+    released: v3.2.0
+    description: |
+      Creates a slice (like an array or list). Useful when needing to `range` over a bunch of variables.
+    pipeline: false
+    arguments:
+      - name: in...
+        required: true
+        description: the elements of the slice
+    examples:
+      - |
+        $ gomplate -i '{{ range coll.Slice "Bart" "Lisa" "Maggie" }}Hello, {{ . }}{{ end }}'
+        Hello, Bart
+        Hello, Lisa
+        Hello, Maggie
+  - name: coll.GoSlice
+    released: v4.0.0
+    description: |
+      This exposes the `slice` function from Go's [`text/template`](https://pkg.go.dev/text/template/#hdr-Functions)
+      package. Note that using `slice` will use the `coll.Slice` function instead,
+      which may not be desired.
+      For some background on this, see [this issue](https://github.com/hairyhenderson/gomplate/issues/1461).
+
+      Here is the upstream documentation:
+
+      ```
+      slice returns the result of slicing its first argument by the
+      remaining arguments. Thus "slice x 1 2" is, in Go syntax, x[1:2],
+      while "slice x" is x[:], "slice x 1" is x[1:], and "slice x 1 2 3"
+      is x[1:2:3]. The first argument must be a string, slice, or array.
+      ```
+
+      See the [Go language spec](https://go.dev/ref/spec#Slice_expressions) for
+      more details.
+    pipeline: false
+    arguments:
+      - name: item
+        required: true
+        description: the string, slice, or array to slice
+      - name: indexes...
+        required: false
+        description: the indexes to slice the item by (0 to 3 arguments)
+    examples:
+      - |
+        $ gomplate -i '{{ coll.GoSlice "hello world" 3 8 }}'
+        lo wo
+  - name: coll.Has
+    released: v3.2.0
+    alias: has
+    description: |
+      Reports whether a given object has a property with the given key, or whether a given array/slice contains the given value. Can be used with `if` to prevent the template from trying to access a non-existent property in an object.
+    pipeline: false
+    arguments:
+      - name: in
+        required: true
+        description: The object or list to search
+      - name: item
+        required: true
+        description: The item to search for
+    examples:
+      - |
+        $ gomplate -i '{{ $l := coll.Slice "foo" "bar" "baz" }}there is {{ if has $l "bar" }}a{{else}}no{{end}} bar'
+        there is a bar
+      - |
+        $ export DATA='{"foo": "bar"}'
+        $ gomplate -i '{{ $o := data.JSON (getenv "DATA") -}}
+        {{ if (has $o "foo") }}{{ $o.foo }}{{ else }}THERE IS NO FOO{{ end }}'
+        bar
+      - |
+        $ export DATA='{"baz": "qux"}'
+        $ gomplate -i '{{ $o := data.JSON (getenv "DATA") -}}
+        {{ if (has $o "foo") }}{{ $o.foo }}{{ else }}THERE IS NO FOO{{ end }}'
+        THERE IS NO FOO
+  - name: coll.Index
+    released: v4.0.0
+    description: |
+      Returns the result of indexing the given map, slice, or array by the given
+      key or index. This is similar to the built-in `index` function, but the
+      arguments are ordered differently for pipeline compatibility. Also this
+      function is more strict, and will return an error when trying to access a
+      non-existent map key.
+
+      Multiple indexes may be given, for nested indexing.
+    pipeline: true
+    arguments:
+      - name: indexes...
+        required: true
+        description: The key or index 
+      - name: in
+        required: true
+        description: The map, slice, or array to index
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Index "foo" (dict "foo" "bar") }}'
+        bar
+      - |
+        $ gomplate -i '{{ $m := json `{"foo": {"bar": "baz"}}` -}}
+          {{ coll.Index "foo" "bar" $m }}'
+        baz
+      - |
+        $ gomplate -i '{{ coll.Slice "foo" "bar" "baz" | coll.Index 1 }}'
+        bar
+  - name: coll.JSONPath
+    alias: jsonpath
+    released: v3.4.0
+    description: |
+      Extracts portions of an input object or list using a [JSONPath][] expression.
+
+      Any object or list may be used as input. The output depends somewhat on the expression; if multiple items are matched, an array is returned.
+
+      JSONPath expressions can be validated at https://jsonpath.com
+
+      [JSONPath]: https://goessner.net/articles/JsonPath
+    pipeline: true
+    arguments:
+      - name: expression
+        required: true
+        description: The JSONPath expression
+      - name: in
+        required: true
+        description: The object or list to query
+    examples:
+      - |
+        $ gomplate -i '{{ .books | jsonpath `$..works[?( @.edition_count > 400 )].title` }}' -c books=https://openlibrary.org/subjects/fantasy.json
+        [Alice's Adventures in Wonderland Gulliver's Travels]
+  - name: coll.JQ
+    alias: jq
+    released: v4.0.0
+    description: |
+      Filters an input object or list using the [jq](https://stedolan.github.io/jq/) language, as implemented by [gojq](https://github.com/itchyny/gojq).
+
+      Any JSON datatype may be used as input (NOTE: strings are not JSON-parsed but passed in as is).
+      If the expression results in multiple items (no matter if streamed or as an array) they are wrapped in an array.
+      Otherwise a single item is returned (even if resulting in an array with a single contained element).
+
+      JQ filter expressions can be tested at https://jqplay.org/
+
+      See also:
+
+      - [jq manual](https://stedolan.github.io/jq/manual/)
+      - [gojq differences to jq](https://github.com/itchyny/gojq#difference-to-jq)
+    pipeline: true
+    arguments:
+      - name: expression
+        required: true
+        description: The JQ expression
+      - name: in
+        required: true
+        description: The object or list to query
+    examples:
+      - |
+        $ gomplate \
+           -i '{{ .books | jq `[.works[]|{"title":.title,"authors":[.authors[].name],"published":.first_publish_year}][0]` }}' \
+           -c books=https://openlibrary.org/subjects/fantasy.json
+        map[authors:[Lewis Carroll] published:1865 title:Alice's Adventures in Wonderland]
+  - name: coll.Keys
+    released: v3.2.0
+    alias: keys
+    description: |
+      Return a list of keys in one or more maps.
+
+      The keys will be ordered first by map position (if multiple maps are given),
+      then alphabetically.
+
+      See also [`coll.Values`](#collvalues).
+    pipeline: true
+    arguments:
+      - name: in...
+        required: true
+        description: the maps
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Keys (dict "foo" 1 "bar" 2) }}'
+        [bar foo]
+        $ gomplate -i '{{ $map1 := dict "foo" 1 "bar" 2 -}}{{ $map2 := dict "baz" 3 "qux" 4 -}}{{ coll.Keys $map1 $map2 }}'
+        [bar foo baz qux]
+  - name: coll.Values
+    alias: values
+    released: v3.2.0
+    description: |
+      Return a list of values in one or more maps.
+
+      The values will be ordered first by map position (if multiple maps are given),
+      then alphabetically by key.
+
+      See also [`coll.Keys`](#collkeys).
+    pipeline: true
+    arguments:
+      - name: in...
+        required: true
+        description: the maps
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Values (dict "foo" 1 "bar" 2) }}'
+        [2 1]
+        $ gomplate -i '{{ $map1 := dict "foo" 1 "bar" 2 -}}{{ $map2 := dict "baz" 3 "qux" 4 -}}{{ coll.Values $map1 $map2 }}'
+        [2 1 3 4]
+  - name: coll.Append
+    alias: append
+    released: v3.2.0
+    description: |
+      Append a value to the end of a list.
+
+      _Note that this function does not change the given list; it always produces a new one._
+
+      See also [`coll.Prepend`](#collprepend).
+    pipeline: true
+    arguments:
+      - name: value
+        required: true
+        description: the value to add
+      - name: list...
+        required: true
+        description: the slice or array to append to
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Slice 1 1 2 3 | append 5 }}'
+        [1 1 2 3 5]
+  - name: coll.Prepend
+    alias: prepend
+    released: v3.2.0
+    description: |
+      Prepend a value to the beginning of a list.
+
+      _Note that this function does not change the given list; it always produces a new one._
+
+      See also [`coll.Append`](#collappend).
+    pipeline: true
+    arguments:
+      - name: value
+        required: true
+        description: the value to add
+      - name: list...
+        required: true
+        description: the slice or array to prepend to
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Slice 4 3 2 1 | prepend 5 }}'
+        [5 4 3 2 1]
+  - name: coll.Uniq
+    alias: uniq
+    released: v3.2.0
+    description: |
+      Remove any duplicate values from the list, without changing order.
+
+      _Note that this function does not change the given list; it always produces a new one._
+    pipeline: true
+    arguments:
+      - name: list
+        required: true
+        description: the input list
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Slice 1 2 3 2 3 4 1 5 | uniq }}'
+        [1 2 3 4 5]
+  - name: coll.Flatten
+    alias: flatten
+    released: v3.6.0
+    description: |
+      Flatten a nested list. Defaults to completely flattening all nested lists,
+      but can be limited with `depth`.
+
+      _Note that this function does not change the given list; it always produces a new one._
+    pipeline: true
+    arguments:
+      - name: depth
+        required: false
+        description: maximum depth of nested lists to flatten. Omit or set to `-1` for infinite depth.
+      - name: list
+        required: true
+        description: the input list
+    examples:
+      - |
+        $ gomplate -i '{{ "[[1,2],[],[[3,4],[[[5],6],7]]]" | jsonArray | flatten }}'
+        [1 2 3 4 5 6 7]
+      - |
+        $ gomplate -i '{{ coll.Flatten 2 ("[[1,2],[],[[3,4],[[[5],6],7]]]" | jsonArray) }}'
+        [1 2 3 4 [[5] 6] 7]
+  - name: coll.Reverse
+    alias: reverse
+    released: v3.2.0
+    description: |
+      Reverse a list.
+
+      _Note that this function does not change the given list; it always produces a new one._
+    pipeline: true
+    arguments:
+      - name: list
+        required: true
+        description: the list to reverse
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Slice 4 3 2 1 | reverse }}'
+        [1 2 3 4]
+  - name: coll.Sort
+    alias: sort
+    released: v3.2.0
+    description: |
+      Sort a given list. Uses the natural sort order if possible. For inputs
+      that are not sortable (either because the elements are of different types,
+      or of an un-sortable type), the input will simply be returned, unmodified.
+
+      Maps and structs can be sorted by a named key.
+
+      _Note that this function does not modify the input._
+    pipeline: true
+    arguments:
+      - name: key
+        required: false
+        description: the key to sort by, for lists of maps or structs
+      - name: list
+        required: true
+        description: the slice or array to sort
+    examples:
+      - |
+        $ gomplate -i '{{ coll.Slice "foo" "bar" "baz" | coll.Sort }}'
+        [bar baz foo]
+      - |
+        $ gomplate -i '{{ sort (coll.Slice 3 4 1 2 5) }}'
+        [1 2 3 4 5]
+      - |
+        $ cat <<EOF > in.json
+        [{"a": "foo", "b": 1}, {"a": "bar", "b": 8}, {"a": "baz", "b": 3}]
+        EOF
+        $ gomplate -d in.json -i '{{ range (include "in" | jsonArray | coll.Sort "b") }}{{ print .a "\n" }}{{ end }}'
+        foo
+        baz
+        bar
+  - name: coll.Merge
+    alias: merge
+    released: v3.2.0
+    description: |
+      Merge maps together by overriding src with dst.
+
+      In other words, the src map can be configured the "default" map, whereas the dst
+      map can be configured the "overrides".
+
+      Many source maps can be provided. Precedence is in left-to-right order.
+
+      _Note that this function does not modify the input._
+    pipeline: true
+    arguments:
+      - name: dst
+        required: true
+        description: the map to merge _into_
+      - name: srcs...
+        required: true
+        description: the map (or maps) to merge _from_
+    examples:
+      - |
+        $ gomplate -i '{{ $default := dict "foo" 1 "bar" 2}}
+        {{ $config := dict "foo" 8 }}
+        {{ merge $config $default }}'
+        map[bar:2 foo:8]
+      - |
+        $ gomplate -i '{{ $dst := dict "foo" 1 "bar" 2 }}
+        {{ $src1 := dict "foo" 8 "baz" 4 }}
+        {{ $src2 := dict "foo" 3 "bar" 5 }}
+        {{ coll.Merge $dst $src1 $src2 }}'
+        map[foo:1 bar:2 baz:4]
+  - name: coll.Pick
+    released: v3.7.0
+    description: |
+      Given a map, returns a new map with any entries that have the given keys.
+
+      The keys can either be separate arguments, or a slice (since v4.0.0).
+
+      This is the inverse of [`coll.Omit`](#collomit).
+
+      _Note that this function does not modify the input._
+    pipeline: true
+    arguments:
+      - name: keys...
+        required: true
+        description: the keys (strings) to match
+      - name: map
+        required: true
+        description: the map to pick from
+    examples:
+      - |
+        $ gomplate -i '{{ $data := dict "foo" 1 "bar" 2 "baz" 3 }}
+        {{ coll.Pick "foo" "baz" $data }}'
+        map[baz:3 foo:1]
+      - |
+        $ gomplate -i '{{ $data := dict "foo" 1 "bar" 2 "baz" 3 }}
+        {{ $keys := coll.Slice "foo" "baz" }}
+        {{ coll.Pick $keys $data }}'
+        map[baz:3 foo:1]
+  - name: coll.Omit
+    released: v3.7.0
+    description: |
+      Given a map, returns a new map without any entries that have the given keys.
+      Given a list, returns a new list without any elements equal to the given values (since v5.1.0).
+
+      The keys/values can either be separate arguments, or a slice (since v4.0.0).
+
+      This is the inverse of [`coll.Pick`](#collpick).
+
+      _Note that this function does not modify the input._
+    pipeline: true
+    arguments:
+      - name: keys/values...
+        required: true
+        description: the keys (strings) to omit from a map, or values to omit from a list
+      - name: map or list
+        required: true
+        description: the map or list to omit from
+    examples:
+      - |
+        $ gomplate -i '{{ $data := dict "foo" 1 "bar" 2 "baz" 3 }}
+        {{ coll.Omit "foo" "baz" $data }}'
+        map[bar:2]
+      - |
+        $ gomplate -i '{{ $data := dict "foo" 1 "bar" 2 "baz" 3 }}
+        {{ $keys := coll.Slice "foo" "baz" }}
+        {{ coll.Omit $keys $data }}'
+        map[bar:2]
+      - |
+        $ gomplate -i '{{ coll.Slice "a" "b" "c" | coll.Omit "b" }}'
+        [a c]
+  - name: coll.Set
+    released: v4.0.0
+    alias: set
+    description: |
+      Sets the given key to the given value in the given map.
+
+      The map is modified in place, and the modified map is returned.
+    pipeline: true
+    arguments:
+      - name: key
+        required: true
+        description: the key (string) to set
+      - name: value
+        required: true
+        description: the value to set
+      - name: map
+        required: true
+        description: the map to modify
+    examples:
+      - |
+        $ gomplate -i '{{ $data := dict "foo" 1 "bar" 2 }}
+        {{ coll.Set "baz" 3 $data }}'
+        map[bar:2 baz:3 foo:1]
+      - |
+        $ gomplate -i '{{ dict "foo" 1 | coll.Set "bar" 2 }}'
+        map[bar:2 foo:1]
+  - name: coll.Unset
+    released: v4.0.0
+    alias: unset
+    description: |
+      Deletes the element with the specified key in the given map. If there is no such element, the map is returned unchanged.
+
+      The map is modified in place, and the modified map is returned.
+    pipeline: true
+    arguments:
+      - name: key
+        required: true
+        description: the key (string) to unset
+      - name: map
+        required: true
+        description: the map to modify
+    examples:
+      - |
+        $ gomplate -i '{{ $data := dict "foo" 1 "bar" 2 "baz" 3 }}
+        {{ coll.Unset "bar" $data }}'
+        map[baz:3 foo:1]
+      - |
+        $ gomplate -i '{{ dict "foo" 1 "bar" 2 | coll.Unset "bar" }}'
+        map[foo:1]

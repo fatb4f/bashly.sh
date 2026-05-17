@@ -1,0 +1,625 @@
+ns: strings
+preamble: ''
+funcs:
+  - name: strings.Abbrev
+    released: v2.6.0
+    description: |
+      Abbreviates a string using `...` (ellipses). Takes an optional offset from the beginning of the string, and a maximum final width (including added ellipses).
+
+      _Also see [`strings.Trunc`](#stringstrunc)._
+    pipeline: true
+    arguments:
+      - name: offset
+        required: false
+        description: offset from the start of the string. Must be `4` or greater for ellipses to be added. Defaults to `0`
+      - name: width
+        required: true
+        description: the desired maximum final width of the string, including ellipses
+      - name: input
+        required: true
+        description: the input string to abbreviate
+    examples:
+      - |
+        $ gomplate -i '{{ "foobarbazquxquux" | strings.Abbrev 9 }}'
+        foobar...
+        $ gomplate -i '{{ "foobarbazquxquux" | strings.Abbrev 6 9 }}'
+        ...baz...
+  - name: strings.Contains
+    released: v1.9.0
+    description: |
+      Reports whether a substring is contained within a string.
+    pipeline: true
+    arguments:
+      - name: substr
+        required: true
+        description: the substring to search for
+      - name: input
+        required: true
+        description: the input to search
+    rawExamples:
+      - |
+        _`input.tmpl`:_
+        ```
+        {{ if (env.Getenv "FOO" | strings.Contains "f") }}yes{{else}}no{{end}}
+        ```
+
+        ```console
+        $ FOO=foo gomplate < input.tmpl
+        yes
+        $ FOO=bar gomplate < input.tmpl
+        no
+        ```
+  - name: strings.HasPrefix
+    released: v1.9.0
+    description: |
+      Tests whether a string begins with a certain prefix.
+    pipeline: true
+    arguments:
+      - name: prefix
+        required: true
+        description: the prefix to search for
+      - name: input
+        required: true
+        description: the input to search
+    examples:
+      - |
+        $ URL=http://example.com gomplate -i '{{if env.Env.URL | strings.HasPrefix "https"}}foo{{else}}bar{{end}}'
+        bar
+        $ URL=https://example.com gomplate -i '{{if env.Env.URL | strings.HasPrefix "https"}}foo{{else}}bar{{end}}'
+        foo
+  - name: strings.HasSuffix
+    released: v1.9.0
+    description: |
+      Tests whether a string ends with a certain suffix.
+    pipeline: true
+    arguments:
+      - name: suffix
+        required: true
+        description: the suffix to search for
+      - name: input
+        required: true
+        description: the input to search
+    rawExamples:
+      - |
+        _`input.tmpl`:_
+        ```
+        {{env.Env.URL}}{{if not (env.Env.URL | strings.HasSuffix ":80")}}:80{{end}}
+        ```
+
+        ```console
+        $ URL=http://example.com gomplate < input.tmpl
+        http://example.com:80
+        ```
+  - name: strings.Indent
+    released: v1.9.0
+    alias: indent
+    description: |
+      Indents a string. If the input string has multiple lines, each line will be indented.
+
+      As of v4.0.0, this function will error if the `width` or `indent` arguments are invalid.
+    pipeline: true
+    arguments:
+      - name: width
+        required: false
+        description: 'Number of times to repeat the `indent` string. Must be greater than 0. Default: `1`'
+      - name: indent
+        required: false
+        description: 'The string to indent with. Must not contain a newline character ("\n"). Default: `" "`'
+      - name: input
+        required: true
+        description: The string to indent
+    rawExamples:
+      - |
+        This function can be especially useful when adding YAML snippets into other YAML documents, where indentation is important:
+
+        _`input.tmpl`:_
+        ```
+        foo:
+        {{ `{"bar": {"baz": 2}}` | json | toYAML | strings.Indent "  " }}
+        {{- `{"qux": true}` | json | toYAML | strings.Indent 2 }}
+          quux:
+        {{ `{"quuz": 42}` | json | toYAML | strings.Indent 2 "  " -}}
+        ```
+
+        ```console
+        $ gomplate -f input.tmpl
+        foo:
+          bar:
+            baz: 2
+          qux: true
+
+          quux:
+            quuz: 42
+        ```
+  - name: strings.SkipLines
+    released: v4.0.0
+    description: |
+      Skips the given number of lines (each ending in a `\n`), returning the
+      remainder.
+
+      If `skip` is greater than the number of lines in `in`, an empty string is
+      returned.
+    pipeline: true
+    arguments:
+      - name: skip
+        required: true
+        description: the number of lines to skip - must be a positive number
+      - name: in
+        required: true
+        description: the input string
+    examples:
+      - |
+        $ gomplate -i '{{ "foo\nbar\nbaz" | strings.SkipLines 2 }}'
+        baz
+      - |
+        $ gomplate -i '{{ strings.SkipLines 1 "foo\nbar\nbaz" }}'
+        bar
+        baz
+  - name: strings.Split
+    released: v1.9.0
+    description: |
+      Slices `input` into the substrings separated by `separator`, returning a
+      slice of the substrings between those separators. If `input` does not
+      contain `separator` and `separator` is not empty, returns a single-element
+      slice whose only element is `input`.
+
+      If `separator` is empty, it will split after each UTF-8 sequence. If
+      both inputs are empty (i.e. `strings.Split "" ""`), it will return an
+      empty slice.
+
+      This is equivalent to [`strings.SplitN`](#stringssplitn) with a `count`
+      of `-1`.
+
+      Note that the delimiter is not included in the resulting elements.
+    pipeline: true
+    arguments:
+      - name: separator
+        required: true
+        description: the delimiter to split on, can be multiple characters
+      - name: input
+        required: true
+        description: the input string
+    examples:
+      - |
+        $ gomplate -i '{{range ("Bart,Lisa,Maggie" | strings.Split ",") }}Hello, {{.}}
+        {{end}}'
+        Hello, Bart
+        Hello, Lisa
+        Hello, Maggie
+      - |
+        $ gomplate -i '{{range strings.Split "," "One,Two,Three" }}{{.}}{{"\n"}}{{end}}'
+        One
+        Two
+        Three
+  - name: strings.SplitN
+    released: v1.9.0
+    description: |
+      Slices `input` into the substrings separated by `separator`, returning a
+      slice of the substrings between those separators. If `input` does not
+      contain `separator` and `separator` is not empty, returns a single-element
+      slice whose only element is `input`.
+
+      The `count` determines the number of substrings to return:
+
+      * `count > 0`: at most `count` substrings; the last substring will be the
+        unsplit remainder.
+      * `count == 0`: the result is nil (zero substrings)
+      * `count < 0`: all substrings
+
+      See [`strings.Split`](#stringssplit) for more details.
+    pipeline: true
+    arguments:
+      - name: separator
+        required: true
+        description: the delimiter to split on, can be multiple characters
+      - name: count
+        required: true
+        description: the maximum number of substrings to return
+      - name: input
+        required: true
+        description: the input string
+    examples:
+      - |
+        $ gomplate -i '{{ range ("foo:bar:baz" | strings.SplitN ":" 2) }}{{.}}
+        {{end}}'
+        foo
+        bar:baz
+  - name: strings.Quote
+    released: v3.1.0
+    alias: quote
+    description: |
+      Surrounds an input string with double-quote characters (`"`). If the input is not a string, converts first.
+
+      `"` characters in the input are first escaped with a `\` character.
+
+      This is a convenience function which is equivalent to:
+
+      ```
+      {{ print "%q" "input string" }}
+      ```
+    pipeline: true
+    arguments:
+      - name: in
+        required: true
+        description: The input to quote
+    examples:
+      - |
+        $ gomplate -i '{{ "in" | quote }}'
+        "in"
+        $ gomplate -i '{{ strings.Quote 500 }}'
+        "500"
+  - name: strings.Repeat
+    released: v2.6.0
+    description: |
+      Returns a new string consisting of `count` copies of the input string.
+
+      It errors if `count` is negative or if the length of `input` multiplied by `count` overflows.
+
+      This wraps Go's [`strings.Repeat`](https://pkg.go.dev/strings/#Repeat).
+    pipeline: true
+    arguments:
+      - name: count
+        required: true
+        description: the number of times to repeat the input
+      - name: input
+        required: true
+        description: the input to repeat
+    examples:
+      - |
+        $ gomplate -i '{{ "hello " | strings.Repeat 5 }}'
+        hello hello hello hello hello
+  - name: strings.ReplaceAll
+    released: v1.9.0
+    alias: replaceAll
+    description: |
+      Replaces all occurrences of a given string with another.
+    pipeline: true
+    arguments:
+      - name: old
+        required: true
+        description: the text to replace
+      - name: new
+        required: true
+        description: the new text to replace with
+      - name: input
+        required: true
+        description: the input to modify
+    examples:
+      - |
+        $ gomplate -i '{{ strings.ReplaceAll "." "-" "172.21.1.42" }}'
+        172-21-1-42
+        $ gomplate -i '{{ "172.21.1.42" | strings.ReplaceAll "." "-" }}'
+        172-21-1-42
+  - name: strings.Slug
+    released: v2.6.0
+    description: |
+      Creates a a "slug" from a given string - supports Unicode correctly. This wraps the [github.com/gosimple/slug](https://github.com/gosimple/slug) package. See [the github.com/gosimple/slug docs](https://pkg.go.dev/github.com/gosimple/slug) for more information.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: the input to "slugify"
+    examples:
+      - |
+        $ gomplate -i '{{ "Hello, world!" | strings.Slug }}'
+        hello-world
+      - |
+        $ echo 'Rock & Roll @ Cafe Wha?' | gomplate -d in=stdin: -i '{{ strings.Slug (include "in") }}'
+        rock-and-roll-at-cafe-wha
+  - name: strings.ShellQuote
+    alias: shellQuote
+    released: v3.6.0
+    description: |
+      Given a string, emits a version of that string that will evaluate to its literal data when expanded by any POSIX-compliant shell.
+
+      Given an array or slice, emit a single string which will evaluate to a series of shell words, one per item in that array or slice.
+    pipeline: true
+    arguments:
+      - name: in
+        required: true
+        description: The input to quote
+    examples:
+      - |
+        $ gomplate -i "{{ coll.Slice \"one word\" \"foo='bar baz'\" | shellQuote }}"
+        'one word' 'foo='"'"'bar baz'"'"''
+      - |
+        $ gomplate -i "{{ strings.ShellQuote \"it's a banana\" }}"
+        'it'"'"'s a banana'
+  - name: strings.Squote
+    alias: squote
+    released: v3.1.0
+    description: |
+      Surrounds an input string with a single-quote (apostrophe) character (`'`). If the input is not a string, converts first.
+
+      `'` characters in the input are first escaped in the YAML-style (by repetition: `''`).
+    pipeline: true
+    arguments:
+      - name: in
+        required: true
+        description: The input to quote
+    examples:
+      - |
+        $ gomplate -i '{{ "in" | squote }}'
+        'in'
+      - |
+        $ gomplate -i "{{ strings.Squote \"it's a banana\" }}"
+        'it''s a banana'
+  - name: strings.Title
+    alias: title
+    released: v1.9.0
+    description: |
+      Convert to title-case.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{strings.Title "hello, world!"}}'
+        Hello, World!
+  - name: strings.ToLower
+    alias: toLower
+    released: v1.9.0
+    description: |
+      Convert to lower-case.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ echo '{{strings.ToLower "HELLO, WORLD!"}}' | gomplate
+        hello, world!
+  - name: strings.ToUpper
+    alias: toUpper
+    released: v1.9.0
+    description: |
+      Convert to upper-case.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{strings.ToUpper "hello, world!"}}'
+        HELLO, WORLD!
+  - name: strings.Trim
+    released: v1.9.0
+    description: |
+      Trims a string by removing the given characters from the beginning and end of
+      the string.
+    pipeline: true
+    arguments:
+      - name: cutset
+        required: true
+        description: the set of characters to cut
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "_-foo-_" | strings.Trim "_-" }}'
+        foo
+  - name: strings.TrimLeft
+    released: v4.1.0
+    description: |
+      Trims a string by removing the given characters from the beginning of the string.
+      This wraps Go's [`strings.TrimLeft`](https://pkg.go.dev/strings#TrimLeft).
+    pipeline: true
+    arguments:
+      - name: cutset
+        required: true
+        description: the set of characters to cut
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "  - hello, world!" | strings.TrimLeft " " }}'
+        - hello, world!
+  - name: strings.TrimPrefix
+    released: v2.5.0
+    description: |
+      Returns a string without the provided leading prefix string, if the prefix is present.
+
+      This wraps Go's [`strings.TrimPrefix`](https://pkg.go.dev/strings/#TrimPrefix).
+    pipeline: true
+    arguments:
+      - name: prefix
+        required: true
+        description: the prefix to trim
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "hello, world" | strings.TrimPrefix "hello, " }}'
+        world
+  - name: strings.TrimRight
+    released: v4.1.0
+    description: |
+      Trims a string by removing the given characters from the end of the string.
+      This wraps Go's [`strings.TrimRight`](https://pkg.go.dev/strings#TrimRight).
+    pipeline: true
+    arguments:
+      - name: cutset
+        required: true
+        description: the set of characters to cut
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "hello, world!  " | strings.TrimRight " " }}'
+        hello, world!
+  - name: strings.TrimSpace
+    alias: trimSpace
+    released: v1.9.0
+    description: |
+      Trims a string by removing whitespace from the beginning and end of
+      the string.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "  \n\t foo" | strings.TrimSpace }}'
+        foo
+  - name: strings.TrimSuffix
+    released: v2.6.0
+    description: |
+      Returns a string without the provided trailing suffix string, if the suffix is present.
+
+      This wraps Go's [`strings.TrimSuffix`](https://pkg.go.dev/strings/#TrimSuffix).
+    pipeline: true
+    arguments:
+      - name: suffix
+        required: true
+        description: the suffix to trim
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "hello, world" | strings.TrimSuffix "world" }}jello'
+        hello, jello
+  - name: strings.Trunc
+    released: v2.6.0
+    description: |
+      Returns a string truncated to the given length.
+
+      _Also see [`strings.Abbrev`](#stringsabbrev)._
+    pipeline: true
+    arguments:
+      - name: length
+        required: true
+        description: the maximum length of the output
+      - name: input
+        required: true
+        description: the input
+    examples:
+      - |
+        $ gomplate -i '{{ "hello, world" | strings.Trunc 5 }}'
+        hello
+  - name: strings.CamelCase
+    released: v3.3.0
+    description: |
+      Converts a sentence to CamelCase, i.e. `The quick brown fox` becomes `TheQuickBrownFox`.
+
+      All non-alphanumeric characters are stripped, and the beginnings of words are upper-cased. If the input begins with a lower-case letter, the result will also begin with a lower-case letter.
+
+      See [CamelCase on Wikipedia](https://en.wikipedia.org/wiki/Camel_case) for more details.
+    pipeline: true
+    arguments:
+      - name: in
+        required: true
+        description: The input
+    examples:
+      - |
+        $ gomplate -i '{{ "Hello, World!" | strings.CamelCase }}'
+        HelloWorld
+      - |
+        $ gomplate -i '{{ "hello jello" | strings.CamelCase }}'
+        helloJello
+  - name: strings.SnakeCase
+    released: v3.3.0
+    description: |
+      Converts a sentence to snake_case, i.e. `The quick brown fox` becomes `The_quick_brown_fox`.
+
+      All non-alphanumeric characters are stripped, and spaces are replaced with an underscore (`_`). If the input begins with a lower-case letter, the result will also begin with a lower-case letter.
+
+      See [Snake Case on Wikipedia](https://en.wikipedia.org/wiki/Snake_case) for more details.
+    pipeline: true
+    arguments:
+      - name: in
+        required: true
+        description: The input
+    examples:
+      - |
+        $ gomplate -i '{{ "Hello, World!" | strings.SnakeCase }}'
+        Hello_world
+      - |
+        $ gomplate -i '{{ "hello jello" | strings.SnakeCase }}'
+        hello_jello
+  - name: strings.KebabCase
+    released: v3.3.0
+    description: |
+      Converts a sentence to kebab-case, i.e. `The quick brown fox` becomes `The-quick-brown-fox`.
+
+      All non-alphanumeric characters are stripped, and spaces are replaced with a hyphen (`-`). If the input begins with a lower-case letter, the result will also begin with a lower-case letter.
+
+      See [Kebab Case on Wikipedia](https://en.wikipedia.org/wiki/Kebab_case) for more details.
+    pipeline: true
+    arguments:
+      - name: in
+        required: true
+        description: The input
+    examples:
+      - |
+        $ gomplate -i '{{ "Hello, World!" | strings.KebabCase }}'
+        Hello-world
+      - |
+        $ gomplate -i '{{ "hello jello" | strings.KebabCase }}'
+        hello-jello
+  - name: strings.WordWrap
+    released: v3.3.0
+    description: |
+      Inserts new line breaks into the input string so it ends up with lines that are at most `width` characters wide.
+
+      The line-breaking algorithm is _naïve_ and _greedy_: lines are only broken between words (i.e. on whitespace characters), and no effort is made to "smooth" the line endings.
+
+      When words that are longer than the desired width are encountered (e.g. long URLs), they are not broken up. Correctness is valued above line length.
+
+      The line-break sequence defaults to `\n` (i.e. the LF/Line Feed character), regardless of OS.
+    pipeline: true
+    arguments:
+      - name: width
+        required: false
+        description: The desired maximum line length (number of characters - defaults to `80`)
+      - name: lbseq
+        required: false
+        description: The line-break sequence to use (defaults to `\n`)
+      - name: in
+        required: true
+        description: The input
+    examples:
+      - |
+        $ gomplate -i '{{ "Hello, World!" | strings.WordWrap 7 }}'
+        Hello,
+        World!
+      - |
+        $ gomplate -i '{{ strings.WordWrap 20 "\\\n" "a string with a long url http://example.com/a/very/long/url which should not be broken" }}'
+        a string with a long
+        url
+        http://example.com/a/very/long/url
+        which should not be
+        broken
+  - name: strings.RuneCount
+    released: v3.4.0
+    description: |
+      Return the number of _runes_ (Unicode code-points) contained within the
+      input. This is similar to the built-in `len` function, but `len` counts
+      the length in _bytes_. The length of an input containing multi-byte
+      code-points should therefore be measured with `strings.RuneCount`.
+
+      Inputs will first be converted to strings, and multiple inputs are
+      concatenated.
+
+      This wraps Go's [`utf8.RuneCountInString`](https://pkg.go.dev/unicode/utf8/#RuneCountInString)
+      function.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: the input(s) to measure
+    examples:
+      - |
+        $ gomplate -i '{{ range (coll.Slice "\u03a9" "\u0030" "\u1430") }}{{ printf "%s is %d bytes and %d runes\n" . (len .) (strings.RuneCount .) }}{{ end }}'
+        Ω is 2 bytes and 1 runes
+        0 is 1 bytes and 1 runes
+        ᐰ is 3 bytes and 1 runes

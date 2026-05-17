@@ -1,0 +1,59 @@
+ns: base64
+preamble: ''
+funcs:
+  - name: base64.Encode
+    released: v1.8.0
+    description: |
+      Encode data as a Base64 string. Specifically, this uses the standard Base64 encoding as defined in [RFC4648 &sect;4](https://tools.ietf.org/html/rfc4648#section-4) (and _not_ the URL-safe encoding).
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: The data to encode. Can be a string, a byte array, or a buffer. Other types will be converted to strings first.
+    examples:
+      - |
+        $ gomplate -i '{{ base64.Encode "hello world" }}'
+        aGVsbG8gd29ybGQ=
+      - |
+        $ gomplate -i '{{ "hello world" | base64.Encode }}'
+        aGVsbG8gd29ybGQ=
+  - name: base64.Decode
+    released: v1.8.0
+    description: |
+      Decode a Base64 string. This supports both standard ([RFC4648 &sect;4](https://tools.ietf.org/html/rfc4648#section-4)) and URL-safe ([RFC4648 &sect;5](https://tools.ietf.org/html/rfc4648#section-5)) encodings.
+
+      This function outputs the data as a string, so it may not be appropriate
+      for decoding binary data. Use [`base64.DecodeBytes`](#base64decodebytes)
+      for binary data.
+    pipeline: true
+    arguments:
+      - name: input
+        required: true
+        description: The base64 string to decode
+    examples:
+      - |
+        $ gomplate -i '{{ base64.Decode "aGVsbG8gd29ybGQ=" }}'
+        hello world
+      - |
+        $ gomplate -i '{{ "aGVsbG8gd29ybGQ=" | base64.Decode }}'
+        hello world
+  - name: base64.DecodeBytes
+    released: v3.8.0
+    description: |
+      Decode a Base64 string. This supports both standard ([RFC4648 &sect;4](https://tools.ietf.org/html/rfc4648#section-4)) and URL-safe ([RFC4648 &sect;5](https://tools.ietf.org/html/rfc4648#section-5)) encodings.
+
+      This function outputs the data as a byte array, so it's most useful for
+      outputting binary data that will be processed further.
+      Use [`base64.Decode`](#base64decode) to output a plain string.
+    pipeline: false
+    arguments:
+      - name: input
+        required: true
+        description: The base64 string to decode
+    examples:
+      - |
+        $ gomplate -i '{{ base64.DecodeBytes "aGVsbG8gd29ybGQ=" }}'
+        [104 101 108 108 111 32 119 111 114 108 100]
+      - |
+        $ gomplate -i '{{ "aGVsbG8gd29ybGQ=" | base64.DecodeBytes | conv.ToString }}'
+        hello world
