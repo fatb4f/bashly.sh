@@ -1,20 +1,9 @@
-# Repo-local discovery order
+# Repo Frame: {{ .repo.name }}
 
-Source of truth: `internal/agent/repo/repo.cue`
+{{ .repo.boot_contract }}
 
-## Repository
+## Authority Contract
+{{ .repo.authority_contract }}
 
-- Name: `{{ .data.repo.name }}`
-- Module: `{{ .data.repo.module }}`
-
-## Authority contract
-
-```txt
-{{ .data.repo.authority_contract }}
-```
-
-## Discovery contract
-
-```txt
-{{ .data.repo.boot_contract }}
-```
+## Module
+`{{ .repo.module }}`

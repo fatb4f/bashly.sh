@@ -3,20 +3,17 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 default:
   just --list
 
-agent-entry:
-  cue eval ./agent-sdk/profiles/bash-cli -e workflow
-
-discovery-frame:
-  cue export ./agent-sdk/codex -e discoveryFrame --out text
-
-static:
-  agent-sdk/scripts/check-agent-static.sh
+agent-vet:
+  go run github.com/fatb4f/agent-sdk/cmd/agentctl vet --project-root .
 
 agent-generate:
-  agent-sdk/scripts/generate.sh
+  go run github.com/fatb4f/agent-sdk/cmd/agentctl generate --project-root .
 
 agent-check-generated:
-  agent-sdk/scripts/check-agent-generated.sh
+  go run github.com/fatb4f/agent-sdk/cmd/agentctl check-generated --project-root .
+
+agent-doctor:
+  go run github.com/fatb4f/agent-sdk/cmd/agentctl doctor --project-root .
 
 source-check:
   scripts/pre-commit-ci.sh --mode=check --project-root .

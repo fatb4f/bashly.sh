@@ -1,0 +1,45 @@
+{
+  "schema_version": "agent-sdk/v0",
+  "repo": {
+    "name": "bashly.sh",
+    "module": "github.com/fatb4f/bashly.sh",
+    "root": "."
+  },
+  "output": {
+    "root": "meta/agent"
+  },
+  "profile": {
+    "id": "bashly-cli",
+    "source": "sdk"
+  },
+  "skills": [
+    {
+      "id": "bashly",
+      "required": true
+    },
+    {
+      "id": "shell-validation",
+      "required": true
+    },
+    {
+      "id": "repo-search"
+    },
+    {
+      "id": "sem"
+    },
+    {
+      "id": "bats-core"
+    },
+    {
+      "id": "shellspec"
+    }
+  ],
+  "adapters": {
+    "codex": {
+      "enabled": true
+    },
+    "claude": {
+      "enabled": true
+    }
+  }
+}

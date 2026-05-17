@@ -1,14 +1,12 @@
-# Project-local skills
+# Skills Frame
 
-Source of truth: `internal/agent/repo/skills.cue`
-Inventory projection: `internal/agent/codex/indexes.cue`
+{{ .skillFrame.discovery_rule }}
 
-| Skill | Status | Path | Purpose | Load Policy |
-|---|---:|---|---|---|
-{{- range .data.skillFrame.rows }}
-| `{{ .id }}` | {{ .status }} | `{{ .path }}` | {{ .purpose }} | {{ .load_policy }} |
+| ID | Status | Path | Purpose |
+|---|---|---|---|
+{{- range .skillFrame.rows }}
+| {{ .id }} | {{ .status }} | `{{ .path }}` | {{ .purpose }} |
 {{- end }}
 
-Discovery rule: answer inventory questions from this frame or `skill-index.json` before opening `SKILL.md` files.
-
-Reference rule: treat skill `references/` trees as cold evidence unless the selected skill explicitly requires them.
+Source of truth: `{{ .skillFrame.source_of_truth }}`
+Inventory projection: `{{ .skillFrame.inventory_projection }}`

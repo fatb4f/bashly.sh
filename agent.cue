@@ -1,14 +1,34 @@
 package agent
 
-import "github.com/fatb4f/bashly.sh/agent-sdk/profiles/bash-cli:bashcli"
+project: {
+	schema_version: "agent-sdk/v0"
 
-// For now, we simply re-export the pre-configured bash-cli profile from the SDK.
-// Once bash-cli is fully refactored into a generic #BashCLI schema, this file 
-// will be updated to instantiate it with bashly.sh-specific values.
+	repo: {
+		name: "bashly.sh"
+		module: "github.com/fatb4f/bashly.sh"
+		root: "."
+	}
 
-surfaces: bashcli.surfaces
-repo: bashcli.repo
-skills: bashcli.skills
-workflow: bashcli.workflow
-discovery: bashcli.discovery
-commandRules: bashcli.commandRules
+	output: {
+		root: "meta/agent"
+	}
+
+	profile: {
+		id: "bashly-cli"
+		source: "sdk"
+	}
+
+	skills: [
+		{id: "bashly", required: true},
+		{id: "shell-validation", required: true},
+		{id: "repo-search"},
+		{id: "sem"},
+		{id: "bats-core"},
+		{id: "shellspec"},
+	]
+
+	adapters: {
+		codex: enabled: true
+		claude: enabled: true
+	}
+}
