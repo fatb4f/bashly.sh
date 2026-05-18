@@ -95,8 +95,8 @@ The current-percent helper is internal. It normalizes the active namespace state
 
 | Namespace | Args | Purpose |
 |---|---|---|
-| `backlight` | `up`, `down` | Adjust backlight state and report the current percent to Lucent. |
-| `sound` | `up`, `down` | Adjust sound state and report the current percent to Lucent. |
+| `backlight` | `up`, `down` | Report the current backlight percent to Lucent. |
+| `sound` | `up`, `down` | Report the current sound percent to Lucent. |
 
 ## Lucent handoff
 

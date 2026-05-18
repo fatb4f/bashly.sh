@@ -1,51 +1,34 @@
-name: cli
-help: Sample application
+name: cli.notify
+help: Bashly-authored dispatcher for Hyprland backlight and sound notifications
 version: 0.1.0
 
-environment_variables:
-- name: api_key
-  help: Set your API key
-
 commands:
-- name: download
-  alias: d
-  help: Download a file
+  - name: backlight
+    help: Backlight notification namespace
+    commands:
+      - name: up
+        help: Report the current backlight percent to Lucent
+        filename: backlight_up_command.sh
+        examples:
+          - cli.notify backlight up
 
-  args:
-  - name: source
-    required: true
-    help: URL to download from
-  - name: target
-    help: "Target filename (default: same as source)"
+      - name: down
+        help: Report the current backlight percent to Lucent
+        filename: backlight_down_command.sh
+        examples:
+          - cli.notify backlight down
 
-  flags:
-  - long: --force
-    short: -f
-    help: Overwrite existing files
+  - name: sound
+    help: Sound notification namespace
+    commands:
+      - name: up
+        help: Report the current sound percent to Lucent
+        filename: sound_up_command.sh
+        examples:
+          - cli.notify sound up
 
-  examples:
-  - cli download example.com
-  - cli download example.com ./output -f
-
-  environment_variables:
-  - name: default_target_location
-    help: Set the default location to download to
-
-- name: upload
-  alias: u
-  help: Upload a file
-  args:
-  - name: source
-    required: true
-    help: File to upload
-
-  flags:
-  - long: --user
-    short: -u
-    arg: user
-    help: Username to use for logging in
-    required: true
-  - long: --password
-    short: -p
-    arg: password
-    help: Password to use for logging in
+      - name: down
+        help: Report the current sound percent to Lucent
+        filename: sound_down_command.sh
+        examples:
+          - cli.notify sound down

@@ -1,36 +1,35 @@
 name: session
-help: Session Lock and Unlock Manager
+help: Session lock and unlock manager
 version: 1.0.0
 
 environment_variables:
-- name: XDG_SESSION_ID
-  help: The current session ID (used by loginctl)
-- name: XDG_CONFIG_HOME
-  help: Configuration directory (used to find hyprlock config)
-- name: XDG_RUNTIME_DIR
-  help: Runtime directory (used for pomodoro break state)
+  - name: XDG_SESSION_ID
+    help: Current logind session id.
+  - name: XDG_CONFIG_HOME
+    help: Configuration root used to locate hyprlock config.
 
 commands:
-- name: lock
-  help: Lock the session
-  description: |
-    Lock the session using loginctl or by running the screen locker.
-    
-    If no flags are provided, it requests a lock via loginctl.
-  flags:
-  - long: --request
-    help: Request loginctl to lock the session
-  - long: --run-locker
-    help: Run the hyprlock screen locker directly
-  examples:
-  - session lock
-  - session lock --request
-  - session lock --run-locker
+  - name: lock
+    help: Request session lock through logind
+    filename: commands/lock.sh
+    flags:
+      - long: --request
+        help: Explicitly request logind lock. This is the default behavior.
+      - long: --run-locker
+        help: Compatibility alias for `session locker`.
+    examples:
+      - session lock
+      - session lock --request
+      - session lock --run-locker
 
-- name: unlock
-  help: Unlock the session and perform cleanup
-  description: |
-    Unlocks the session and performs cleanup tasks like stopping the
-    halt timer and handling pomodoro break logic.
-  examples:
-  - session unlock
+  - name: locker
+    help: Run the concrete screen locker
+    filename: commands/locker.sh
+    examples:
+      - session locker
+
+  - name: unlock
+    help: Unlock the current session and clean up lock-side timers
+    filename: commands/unlock.sh
+    examples:
+      - session unlock

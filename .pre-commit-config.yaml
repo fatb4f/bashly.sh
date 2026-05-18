@@ -3,10 +3,10 @@ minimum_pre_commit_version: "3.0.0"
 repos:
   - repo: local
     hooks:
-      - id: bashly-pre-commit-ci
-        name: agentctl generate
-        entry: go run github.com/fatb4f/agent-sdk/cmd/agentctl generate --project-root .
+      - id: bashly-shell-validation
+        name: bashly source validation
+        entry: .scripts/pre-commit-ci.sh --mode=check --project-root .
         language: system
         pass_filenames: false
         stages: [pre-commit]
-        files: ^(agent\.cue|meta/agent/.*|agent-sdk/.*\.(cue|go|tmpl)|go\.work)$
+        files: ^(src/.*|bashly(?:-settings)?\.yml|settings\.yml|\.scripts/pre-commit-ci\.sh)$

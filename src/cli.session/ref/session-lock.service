@@ -6,4 +6,4 @@ Requisite=graphical-session.target
 
 [Service]
 Type=exec
-ExecStart=%h/.local/bin/session-lock --run-locker
+ExecStart=%h/.local/bin/session locker
