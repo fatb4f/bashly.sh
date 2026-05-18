@@ -1,0 +1,180 @@
+{
+  "profile": {
+    "id": "shell-library",
+    "package": "./cue/profiles/shell-library",
+    "source": "sdk",
+    "adapter_packages": {
+      "codex": "./cue/adapters/codex"
+    }
+  },
+  "workflow": {
+    "id": "bashly-source-edit",
+    "phases": [
+      {
+        "id": "inspect",
+        "tool": "bashly",
+        "mode": "check",
+        "mutates_source": false
+      },
+      {
+        "id": "edit_source",
+        "tool": "bashly",
+        "mode": "write",
+        "mutates_source": true,
+        "after": "inspect",
+        "blocks_on": "generated_bash_edited"
+      },
+      {
+        "id": "format_shellharden",
+        "tool": "shell-validation",
+        "mode": "write",
+        "mutates_source": true,
+        "after": "edit_source",
+        "blocks_on": "shellharden_failed"
+      },
+      {
+        "id": "format_shfmt",
+        "tool": "shell-validation",
+        "mode": "write",
+        "mutates_source": true,
+        "after": "format_shellharden",
+        "blocks_on": "shfmt_failed"
+      },
+      {
+        "id": "lint_source_shellcheck",
+        "tool": "shell-validation",
+        "mode": "check",
+        "mutates_source": false,
+        "after": "format_shfmt",
+        "blocks_on": "shellcheck_source_failed"
+      },
+      {
+        "id": "generate_bashly",
+        "tool": "bashly",
+        "mode": "generate",
+        "command": [
+          "bashly",
+          "generate"
+        ],
+        "env": {
+          "BASHLY_FORMATTER": "none"
+        },
+        "mutates_source": false,
+        "after": "lint_source_shellcheck",
+        "blocks_on": "bashly_generate_failed",
+        "source_mutation_guard": true
+      },
+      {
+        "id": "report",
+        "tool": "report",
+        "mode": "check",
+        "mutates_source": false,
+        "after": "generate_bashly"
+      }
+    ],
+    "deferred": [
+      "lint_generated",
+      "bats-core",
+      "shellspec"
+    ]
+  },
+  "rules": [
+    {
+      "kind": "prefix",
+      "pattern": [
+        "cue",
+        "vet"
+      ],
+      "decision": "allow",
+      "justification": "CUE validation is repo-local and non-mutating."
+    },
+    {
+      "kind": "prefix",
+      "pattern": [
+        "cue",
+        "export"
+      ],
+      "decision": "allow",
+      "justification": "Exporting projections is read-only and part of the static authority slice."
+    },
+    {
+      "kind": "prefix",
+      "pattern": [
+        "rm",
+        "-rf"
+      ],
+      "decision": "forbidden",
+      "justification": "Destructive delete must not be agent-default."
+    }
+  ],
+  "surfaces": [
+    {
+      "name": "project-graph",
+      "kind": "index",
+      "output": "generated/project-graph.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "agentctl"
+    },
+    {
+      "name": "workflow-plan",
+      "kind": "index",
+      "output": "generated/workflow-plan.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "agentctl"
+    },
+    {
+      "name": "skill-index",
+      "kind": "index",
+      "output": "generated/skill-index.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:skills"
+    },
+    {
+      "name": "surface-index",
+      "kind": "index",
+      "output": "generated/surface-index.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "agentctl"
+    },
+    {
+      "name": "repo-frame",
+      "kind": "frame",
+      "output": "frames/repo-frame.md",
+      "format": "markdown",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:repo",
+      "template": "repo-frame.md.tmpl"
+    },
+    {
+      "name": "skills-frame",
+      "kind": "frame",
+      "output": "frames/skills.md",
+      "format": "markdown",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:skills",
+      "template": "skills.md.tmpl"
+    },
+    {
+      "name": "workflow-frame",
+      "kind": "frame",
+      "output": "frames/workflow.md",
+      "format": "markdown",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:workflow",
+      "template": "workflow.md.tmpl"
+    },
+    {
+      "name": "default-rules",
+      "kind": "rule",
+      "output": "rules/default.rules",
+      "format": "text",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:rules",
+      "template": "default.rules.tmpl"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "project-graph",
+    "kind": "index",
+    "output": "generated/project-graph.json",
+    "format": "json",
+    "edit_policy": "never-hand-edit",
+    "source": "agentctl"
+  },
+  {
+    "name": "workflow-plan",
+    "kind": "index",
+    "output": "generated/workflow-plan.json",
+    "format": "json",
+    "edit_policy": "never-hand-edit",
+    "source": "agentctl"
+  },
+  {
+    "name": "skill-index",
+    "kind": "index",
+    "output": "generated/skill-index.json",
+    "format": "json",
+    "edit_policy": "never-hand-edit",
+    "source": "./cue/profiles/shell-library:skills"
+  },
+  {
+    "name": "surface-index",
+    "kind": "index",
+    "output": "generated/surface-index.json",
+    "format": "json",
+    "edit_policy": "never-hand-edit",
+    "source": "agentctl"
+  },
+  {
+    "name": "repo-frame",
+    "kind": "frame",
+    "output": "frames/repo-frame.md",
+    "format": "markdown",
+    "edit_policy": "never-hand-edit",
+    "source": "./cue/profiles/shell-library:repo",
+    "template": "repo-frame.md.tmpl"
+  },
+  {
+    "name": "skills-frame",
+    "kind": "frame",
+    "output": "frames/skills.md",
+    "format": "markdown",
+    "edit_policy": "never-hand-edit",
+    "source": "./cue/profiles/shell-library:skills",
+    "template": "skills.md.tmpl"
+  },
+  {
+    "name": "workflow-frame",
+    "kind": "frame",
+    "output": "frames/workflow.md",
+    "format": "markdown",
+    "edit_policy": "never-hand-edit",
+    "source": "./cue/profiles/shell-library:workflow",
+    "template": "workflow.md.tmpl"
+  },
+  {
+    "name": "default-rules",
+    "kind": "rule",
+    "output": "rules/default.rules",
+    "format": "text",
+    "edit_policy": "never-hand-edit",
+    "source": "./cue/profiles/shell-library:rules",
+    "template": "default.rules.tmpl"
+  }
+]

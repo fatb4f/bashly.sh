@@ -4,16 +4,18 @@ Bashly-authored dispatcher for Hyprland binds, namespace-based backlight/sound a
 
 ## Agent Surface
 
-This repository's actual agent-sdk surface is the CUE profile under `agent-sdk/cue/profiles/bash-cli/` and the generated projection in `meta/agent/generated/project-graph.json`.
+This repository's agent surface is declared in `agent.cue` and materialized by the external `github.com/fatb4f/agent-sdk/cmd/agentctl` bridge into `meta/agent/`.
 
 Relevant authority files:
 
 - `agent.cue`
-- `agent-sdk/cue/profiles/bash-cli/repo.cue`
-- `agent-sdk/cue/profiles/bash-cli/skills.cue`
-- `agent-sdk/cue/profiles/bash-cli/workflow.cue`
-- `agent-sdk/cue/profiles/bash-cli/surfaces.cue`
 - `meta/agent/generated/project-graph.json`
+- `meta/agent/generated/workflow-plan.json`
+- `meta/agent/generated/skill-index.json`
+- `meta/agent/generated/surface-index.json`
+- `meta/agent/frames/repo-frame.md`
+- `meta/agent/frames/workflow.md`
+- `meta/agent/frames/skills.md`
 
 Generated frame outputs are projection targets, not hand-edited source files.
 

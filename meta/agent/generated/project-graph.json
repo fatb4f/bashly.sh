@@ -1,45 +1,344 @@
 {
   "schema_version": "agent-sdk/v0",
+  "sdk": {
+    "name": "agent-sdk",
+    "version": "v0",
+    "schema_version": "agent-sdk/v0"
+  },
   "repo": {
     "name": "bashly.sh",
     "module": "github.com/fatb4f/bashly.sh",
     "root": "."
   },
+  "component": {
+    "id": "bashly.sh",
+    "path": ".",
+    "kind": "repo"
+  },
   "output": {
     "root": "meta/agent"
   },
   "profile": {
-    "id": "bashly-cli",
-    "source": "sdk"
+    "id": "shell-library",
+    "package": "./cue/profiles/shell-library",
+    "source": "sdk",
+    "adapter_packages": {
+      "codex": "./cue/adapters/codex"
+    }
   },
   "skills": [
     {
+      "id": "argc",
+      "path": ".agents/skills/argc",
+      "entrypoint": ".agents/skills/argc/SKILL.md",
+      "purpose": "Argc annotation context and argv-guidance for shell source work.",
+      "status": "active",
+      "load_policy": "on_select",
+      "triggers": [
+        "argc",
+        "argv context",
+        "annotation context"
+      ],
+      "required_tools": [
+        "argc"
+      ]
+    },
+    {
+      "id": "bash-ast",
+      "path": ".agents/skills/bash-ast",
+      "entrypoint": ".agents/skills/bash-ast/SKILL.md",
+      "purpose": "Bash AST evidence and structural inspection for shell source.",
+      "status": "active",
+      "load_policy": "on_select",
+      "triggers": [
+        "bash-ast",
+        "ast-bash",
+        "parse tree",
+        "structural evidence"
+      ],
+      "optional_tools": [
+        "bash-ast",
+        "ast-bash"
+      ]
+    },
+    {
       "id": "bashly",
-      "required": true
+      "path": ".agents/skills/bashly",
+      "entrypoint": ".agents/skills/bashly/SKILL.md",
+      "purpose": "Bashly source/config workflow and generated artifact boundary.",
+      "status": "active",
+      "load_policy": "on_select",
+      "triggers": [
+        "bashly",
+        "generated cli",
+        "source script",
+        "bashly.yml"
+      ],
+      "delegates": [
+        "shell-validation",
+        "bats-core",
+        "shellspec"
+      ],
+      "required_tools": [
+        "bashly"
+      ],
+      "optional_tools": [
+        "ruby",
+        "argc",
+        "bash-ast",
+        "tree-sitter",
+        "sem"
+      ]
+    },
+    {
+      "id": "bats-core",
+      "path": ".agents/skills/bats-core",
+      "entrypoint": ".agents/skills/bats-core/SKILL.md",
+      "purpose": "Black-box Bash CLI behavior tests.",
+      "status": "deferred",
+      "load_policy": "on_select",
+      "triggers": [
+        "bats",
+        "behavior tests"
+      ],
+      "optional_tools": [
+        "bats"
+      ]
     },
     {
       "id": "shell-validation",
-      "required": true
+      "path": ".agents/skills/shell-validation",
+      "entrypoint": ".agents/skills/shell-validation/SKILL.md",
+      "purpose": "Shell normalization, formatting, linting, and local CI gate interpretation.",
+      "status": "active",
+      "load_policy": "on_select",
+      "triggers": [
+        "shellharden",
+        "shfmt",
+        "shellcheck",
+        "format",
+        "lint"
+      ],
+      "required_tools": [
+        "shellharden",
+        "shfmt",
+        "shellcheck"
+      ]
     },
     {
-      "id": "repo-search"
+      "id": "shellspec",
+      "path": ".agents/skills/shellspec",
+      "entrypoint": ".agents/skills/shellspec/SKILL.md",
+      "purpose": "ShellSpec source-level Bash behavior tests.",
+      "status": "deferred",
+      "load_policy": "on_select",
+      "triggers": [
+        "shellspec",
+        "behavior tests",
+        "source-level tests"
+      ],
+      "optional_tools": [
+        "shellspec"
+      ]
     },
     {
-      "id": "sem"
+      "id": "tree-sitter",
+      "path": ".agents/skills/tree-sitter",
+      "entrypoint": ".agents/skills/tree-sitter/SKILL.md",
+      "purpose": "Structural parsing and grammar evidence for shell source.",
+      "status": "experimental",
+      "load_policy": "on_select",
+      "triggers": [
+        "tree-sitter",
+        "parse tree",
+        "structural evidence"
+      ]
+    }
+  ],
+  "workflow": {
+    "id": "bashly-source-edit",
+    "phases": [
+      {
+        "id": "inspect",
+        "tool": "bashly",
+        "mode": "check",
+        "mutates_source": false
+      },
+      {
+        "id": "edit_source",
+        "tool": "bashly",
+        "mode": "write",
+        "mutates_source": true,
+        "after": "inspect",
+        "blocks_on": "generated_bash_edited"
+      },
+      {
+        "id": "format_shellharden",
+        "tool": "shell-validation",
+        "mode": "write",
+        "mutates_source": true,
+        "after": "edit_source",
+        "blocks_on": "shellharden_failed"
+      },
+      {
+        "id": "format_shfmt",
+        "tool": "shell-validation",
+        "mode": "write",
+        "mutates_source": true,
+        "after": "format_shellharden",
+        "blocks_on": "shfmt_failed"
+      },
+      {
+        "id": "lint_source_shellcheck",
+        "tool": "shell-validation",
+        "mode": "check",
+        "mutates_source": false,
+        "after": "format_shfmt",
+        "blocks_on": "shellcheck_source_failed"
+      },
+      {
+        "id": "generate_bashly",
+        "tool": "bashly",
+        "mode": "generate",
+        "command": [
+          "bashly",
+          "generate"
+        ],
+        "env": {
+          "BASHLY_FORMATTER": "none"
+        },
+        "mutates_source": false,
+        "after": "lint_source_shellcheck",
+        "blocks_on": "bashly_generate_failed",
+        "source_mutation_guard": true
+      },
+      {
+        "id": "report",
+        "tool": "report",
+        "mode": "check",
+        "mutates_source": false,
+        "after": "generate_bashly"
+      }
+    ],
+    "deferred": [
+      "lint_generated",
+      "bats-core",
+      "shellspec"
+    ]
+  },
+  "surfaces": [
+    {
+      "name": "project-graph",
+      "kind": "index",
+      "output": "generated/project-graph.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "agentctl"
     },
     {
-      "id": "bats-core"
+      "name": "workflow-plan",
+      "kind": "index",
+      "output": "generated/workflow-plan.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "agentctl"
     },
     {
-      "id": "shellspec"
+      "name": "skill-index",
+      "kind": "index",
+      "output": "generated/skill-index.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:skills"
+    },
+    {
+      "name": "surface-index",
+      "kind": "index",
+      "output": "generated/surface-index.json",
+      "format": "json",
+      "edit_policy": "never-hand-edit",
+      "source": "agentctl"
+    },
+    {
+      "name": "repo-frame",
+      "kind": "frame",
+      "output": "frames/repo-frame.md",
+      "format": "markdown",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:repo",
+      "template": "repo-frame.md.tmpl"
+    },
+    {
+      "name": "skills-frame",
+      "kind": "frame",
+      "output": "frames/skills.md",
+      "format": "markdown",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:skills",
+      "template": "skills.md.tmpl"
+    },
+    {
+      "name": "workflow-frame",
+      "kind": "frame",
+      "output": "frames/workflow.md",
+      "format": "markdown",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:workflow",
+      "template": "workflow.md.tmpl"
+    },
+    {
+      "name": "default-rules",
+      "kind": "rule",
+      "output": "rules/default.rules",
+      "format": "text",
+      "edit_policy": "never-hand-edit",
+      "source": "./cue/profiles/shell-library:rules",
+      "template": "default.rules.tmpl"
+    }
+  ],
+  "rules": [
+    {
+      "kind": "prefix",
+      "pattern": [
+        "cue",
+        "vet"
+      ],
+      "decision": "allow",
+      "justification": "CUE validation is repo-local and non-mutating."
+    },
+    {
+      "kind": "prefix",
+      "pattern": [
+        "cue",
+        "export"
+      ],
+      "decision": "allow",
+      "justification": "Exporting projections is read-only and part of the static authority slice."
+    },
+    {
+      "kind": "prefix",
+      "pattern": [
+        "rm",
+        "-rf"
+      ],
+      "decision": "forbidden",
+      "justification": "Destructive delete must not be agent-default."
     }
   ],
   "adapters": {
-    "claude": {
-      "enabled": true
-    },
     "codex": {
-      "enabled": true
+      "enabled": true,
+      "entrypoint": "./cue/adapters/codex",
+      "reads": [
+        "generated/project-graph.json",
+        "generated/workflow-plan.json",
+        "generated/skill-index.json",
+        "generated/surface-index.json",
+        "frames/repo-frame.md",
+        "frames/skills.md",
+        "frames/workflow.md",
+        "rules/default.rules"
+      ]
     }
   }
 }

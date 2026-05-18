@@ -1,22 +1,26 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
+agentctl := "go run github.com/fatb4f/agent-sdk/cmd/agentctl@latest"
+
 default:
   just --list
 
 agent-vet:
-  go run github.com/fatb4f/agent-sdk/cmd/agentctl vet --project-root .
+  {{agentctl}} vet --project-root .
 
 agent-generate:
-  go run github.com/fatb4f/agent-sdk/cmd/agentctl generate --project-root .
+  {{agentctl}} generate --project-root .
 
 agent-check-generated:
-  go run github.com/fatb4f/agent-sdk/cmd/agentctl check-generated --project-root .
+  {{agentctl}} check-generated --project-root .
 
 agent-doctor:
-  go run github.com/fatb4f/agent-sdk/cmd/agentctl doctor --project-root .
+  {{agentctl}} doctor --project-root .
 
 source-check:
-  go run github.com/fatb4f/agent-sdk/cmd/agentctl check-generated --project-root .
+  {{agentctl}} check-generated --project-root .
 
 source-write:
-  go run github.com/fatb4f/agent-sdk/cmd/agentctl generate --project-root .
+  {{agentctl}} generate --project-root .
+
+static: agent-vet agent-check-generated

@@ -14,7 +14,7 @@ project: {
 	}
 
 	profile: {
-		id: "bashly-cli"
+		id: "shell-library"
 		source: "sdk"
 	}
 
@@ -29,6 +29,5 @@ project: {
 
 	adapters: {
 		codex: enabled: true
-		claude: enabled: true
 	}
 }

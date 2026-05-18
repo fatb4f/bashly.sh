@@ -4,9 +4,9 @@ repos:
   - repo: local
     hooks:
       - id: bashly-shell-validation
-        name: bashly source validation
-        entry: .scripts/pre-commit-ci.sh --mode=check --project-root .
+        name: agent surface drift check
+        entry: go run github.com/fatb4f/agent-sdk/cmd/agentctl@latest check-generated --project-root .
         language: system
         pass_filenames: false
         stages: [pre-commit]
-        files: ^(src/.*|bashly(?:-settings)?\.yml|settings\.yml|\.scripts/pre-commit-ci\.sh)$
+        files: ^(agent\.cue|meta/agent/.*|src/.*|bashly(?:-settings)?\.yml|settings\.yml)$
