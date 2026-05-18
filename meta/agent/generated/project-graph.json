@@ -35,10 +35,10 @@
     }
   ],
   "adapters": {
-    "codex": {
+    "claude": {
       "enabled": true
     },
-    "claude": {
+    "codex": {
       "enabled": true
     }
   }
