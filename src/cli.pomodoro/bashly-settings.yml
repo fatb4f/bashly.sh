@@ -1,4 +1,0 @@
-source_dir: src
-target_dir: .
-commands_dir: commands
-strict: true
