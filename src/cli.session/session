@@ -17,7 +17,7 @@ version_command() {
 
 # :command.usage
 session_usage() {
-  printf "session - Session lock and unlock manager\n\n"
+  printf "session - Session lock, unlock, and OSD manager\n\n"
 
   printf "%s\n" "Usage:"
   printf "  session COMMAND\n"
@@ -29,15 +29,14 @@ session_usage() {
   printf "  %s   Request session lock through logind\n" "lock  "
   printf "  %s   Run the concrete screen locker\n" "locker"
   printf "  %s   Unlock the current session and clean up lock-side timers\n" "unlock"
+  printf "  %s   Apply an on-screen display update\n" "osd   "
   echo
-
 
   # :command.long_usage
   if [[ -n "$long_usage" ]]; then
     # :command.usage_options
     printf "%s\n" "Options:"
-    
-    
+
     # :command.usage_fixed_flags
     printf "  %s\n" "--help, -h"
     printf "    Show this help\n"
@@ -45,25 +44,20 @@ session_usage() {
     printf "  %s\n" "--version, -v"
     printf "    Show version number\n"
     echo
-  
-  
+
     # :command.usage_environment_variables
     printf "%s\n" "Environment Variables:"
-    
+
     # :environment_variable.usage
     printf "  %s\n" "XDG_SESSION_ID"
     printf "    Current logind session id.\n"
     echo
-    
+
     # :environment_variable.usage
     printf "  %s\n" "XDG_CONFIG_HOME"
     printf "    Configuration root used to locate hyprlock config.\n"
     echo
-    
-  
-  
-  
-  
+
   fi
 }
 
@@ -76,43 +70,36 @@ session_lock_usage() {
   printf "  session lock --help | -h\n"
   echo
 
-
   # :command.long_usage
   if [[ -n "$long_usage" ]]; then
     # :command.usage_options
     printf "%s\n" "Options:"
-    
+
     # :command.usage_flags
     # :flag.usage
     printf "  %s\n" "--request"
     printf "    Explicitly request logind lock. This is the default behavior.\n"
     echo
-    
+
     # :flag.usage
     printf "  %s\n" "--run-locker"
     printf "    Compatibility alias for \`session locker\`.\n"
     echo
-    
-    
+
     # :command.usage_fixed_flags
     printf "  %s\n" "--help, -h"
     printf "    Show this help\n"
     echo
-  
-  
-  
+
     # :command.usage_examples
     printf "%s\n" "Examples:"
     printf "  session lock\n"
     printf "  session lock --request\n"
     printf "  session lock --run-locker\n"
     echo
-  
-  
-  
+
   fi
 }
-
 
 # :command.usage
 session_locker_usage() {
@@ -123,30 +110,23 @@ session_locker_usage() {
   printf "  session locker --help | -h\n"
   echo
 
-
   # :command.long_usage
   if [[ -n "$long_usage" ]]; then
     # :command.usage_options
     printf "%s\n" "Options:"
-    
-    
+
     # :command.usage_fixed_flags
     printf "  %s\n" "--help, -h"
     printf "    Show this help\n"
     echo
-  
-  
-  
+
     # :command.usage_examples
     printf "%s\n" "Examples:"
     printf "  session locker\n"
     echo
-  
-  
-  
+
   fi
 }
-
 
 # :command.usage
 session_unlock_usage() {
@@ -157,31 +137,62 @@ session_unlock_usage() {
   printf "  session unlock --help | -h\n"
   echo
 
+  # :command.long_usage
+  if [[ -n "$long_usage" ]]; then
+    # :command.usage_options
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_examples
+    printf "%s\n" "Examples:"
+    printf "  session unlock\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+session_osd_usage() {
+  printf "session osd - Apply an on-screen display update\n\n"
+
+  printf "%s\n" "Usage:"
+  printf "  session osd ACTION\n"
+  printf "  session osd --help | -h\n"
+  echo
 
   # :command.long_usage
   if [[ -n "$long_usage" ]]; then
     # :command.usage_options
     printf "%s\n" "Options:"
-    
-    
+
     # :command.usage_fixed_flags
     printf "  %s\n" "--help, -h"
     printf "    Show this help\n"
     echo
-  
-  
-  
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "ACTION"
+    printf "    OSD action to execute\n"
+    echo
+
     # :command.usage_examples
     printf "%s\n" "Examples:"
-    printf "  session unlock\n"
+    printf "  session osd volume-up\n"
+    printf "  session osd volume-down\n"
+    printf "  session osd volume-toggle\n"
+    printf "  session osd brightness-up\n"
+    printf "  session osd brightness-down\n"
     echo
-  
-  
-  
+
   fi
 }
-
-
 
 # :command.normalize_input
 # :command.normalize_input_function
@@ -214,7 +225,6 @@ normalize_input() {
     shift
   done
 }
-
 
 # :command.inspect_args
 inspect_args() {
@@ -250,61 +260,208 @@ inspect_args() {
 }
 
 # :command.user_lib
-# src/lib/session.sh
-session_hyprlock_config() {
-  printf '%s\n' "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprlock.conf"
+# src/lib/notify.sh
+# shellcheck shell=bash
+notify_osd() {
+  local kind value body title icon key
+
+  kind="${1:?kind required}"
+  value="${2:?value required}"
+  body="${3:-}"
+
+  case "$kind" in
+  volume)
+    title="Volume"
+    icon="audio-volume-high-symbolic"
+    key="volume"
+    if [[ -z "$body" ]]; then
+      body="${value}%"
+    fi
+    ;;
+  brightness)
+    title="Brightness"
+    icon="display-brightness-symbolic"
+    key="brightness"
+    if [[ -z "$body" ]]; then
+      body="${value}%"
+    fi
+    ;;
+  mute)
+    title="Volume"
+    icon="audio-volume-muted-symbolic"
+    key="volume"
+    value=0
+    if [[ -z "$body" ]]; then
+      body="Muted"
+    fi
+    ;;
+  *)
+    printf 'notify_osd: unknown kind: %s\n' "$kind" >&2
+    return 64
+    ;;
+  esac
+
+  if ! command -v notify-send >/dev/null 2>&1; then
+    printf 'notify_osd: missing required command: %s\n' "notify-send" >&2
+    return 127
+  fi
+
+  notify-send \
+    --app-name="System" \
+    --urgency=low \
+    --expire-time=1200 \
+    --icon="$icon" \
+    --hint=string:x-canonical-private-synchronous:"$key" \
+    --hint=int:value:"$value" \
+    "$title" \
+    "$body"
 }
 
-session_lock_request() {
-  local sid="${XDG_SESSION_ID:-}"
+# src/lib/osd.sh
+# shellcheck shell=bash
+session_osd_require_tool() {
+  local tool
 
-  if [[ -n "$sid" ]]; then
-    loginctl lock-session "$sid"
-  else
-    loginctl lock-session
+  tool="$1"
+
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    printf 'session osd: missing required command: %s\n' "$tool" >&2
+    return 127
   fi
 }
 
-session_unlock_now() {
-  if [[ -n "${XDG_SESSION_ID:-}" ]]; then
-    loginctl unlock-session "$XDG_SESSION_ID" || true
-  else
-    loginctl unlock-sessions || true
-  fi
-}
+session_osd_volume_percent() {
+  local output volume
 
-session_locker() {
-  local hyprlock_config user_name
+  session_osd_require_tool wpctl || return $?
 
-  user_name="${USER:-$(id -un)}"
+  output="$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)" || return $?
 
-  if pgrep -xu "$user_name" hyprlock > /dev/null 2>&1; then
+  if [[ "$output" == *MUTED* ]]; then
+    printf '%s\n' "muted"
     return 0
   fi
 
-  systemctl --user start locked-session-halt.timer || true
+  volume="$(
+    awk '
+      match($0, /[0-9]+([.][0-9]+)?/) {
+        print substr($0, RSTART, RLENGTH)
+        exit
+      }
+    ' <<<"$output"
+  )"
 
-  hyprlock_config="$(session_hyprlock_config)"
+  if [[ -z "$volume" ]]; then
+    printf 'session osd: unable to parse wpctl volume output\n' >&2
+    return 1
+  fi
 
-  if [[ -f "$hyprlock_config" ]]; then
-    exec hyprlock \
-      --config "$hyprlock_config" \
-      --immediate-render \
-      --no-fade-in
+  awk -v volume="$volume" 'BEGIN { printf "%d\n", (volume * 100) + 0.5 }'
+}
+
+session_osd_brightness_percent() {
+  local current max
+
+  session_osd_require_tool brightnessctl || return $?
+
+  current="$(brightnessctl get 2>/dev/null)" || return $?
+  max="$(brightnessctl max 2>/dev/null)" || return $?
+
+  if ! [[ "$current" =~ ^[0-9]+$ && "$max" =~ ^[0-9]+$ ]]; then
+    printf 'session osd: unable to parse brightnessctl output\n' >&2
+    return 1
+  fi
+
+  if ((max <= 0)); then
+    printf '%s\n' "0"
+    return 0
+  fi
+
+  printf '%s\n' "$(((current * 100 + max / 2) / max))"
+}
+
+session_osd_notify_volume_state() {
+  local value
+
+  value="$1"
+
+  if [[ "$value" == muted ]]; then
+    notify_osd mute 0
   else
-    exec hyprlock \
-      --immediate-render \
-      --no-fade-in
+    notify_osd volume "$value"
   fi
 }
 
-session_unlock() {
-  systemctl --user stop locked-session-halt.timer || true
-  session_unlock_now
+session_osd_notify_brightness_state() {
+  local value
+
+  value="$1"
+
+  notify_osd brightness "$value"
 }
 
+session_osd_volume_up() {
+  session_osd_require_tool wpctl || return $?
 
+  wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ || return $?
+  session_osd_notify_volume_state "$(session_osd_volume_percent)"
+}
 
+session_osd_volume_down() {
+  session_osd_require_tool wpctl || return $?
+
+  wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- || return $?
+  session_osd_notify_volume_state "$(session_osd_volume_percent)"
+}
+
+session_osd_volume_toggle() {
+  session_osd_require_tool wpctl || return $?
+
+  wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle || return $?
+  session_osd_notify_volume_state "$(session_osd_volume_percent)"
+}
+
+session_osd_brightness_up() {
+  session_osd_require_tool brightnessctl || return $?
+
+  brightnessctl set 5%+ || return $?
+  session_osd_notify_brightness_state "$(session_osd_brightness_percent)"
+}
+
+session_osd_brightness_down() {
+  session_osd_require_tool brightnessctl || return $?
+
+  brightnessctl set 5%- || return $?
+  session_osd_notify_brightness_state "$(session_osd_brightness_percent)"
+}
+
+session_osd_dispatch() {
+  local action
+
+  action="${1:-}"
+
+  case "$action" in
+  volume-up)
+    session_osd_volume_up
+    ;;
+  volume-down)
+    session_osd_volume_down
+    ;;
+  volume-toggle)
+    session_osd_volume_toggle
+    ;;
+  brightness-up)
+    session_osd_brightness_up
+    ;;
+  brightness-down)
+    session_osd_brightness_down
+    ;;
+  *)
+    printf 'session osd: unknown action: %s\n' "$action" >&2
+    return 64
+    ;;
+  esac
+}
 
 # :command.command_functions
 # :command.function
@@ -335,6 +492,19 @@ session_unlock_command() {
 
 }
 
+# :command.function
+session_osd_command() {
+
+  # src/commands/osd.sh
+  # shellcheck shell=bash
+  session_osd_command_impl() {
+    # shellcheck disable=SC2154
+    session_osd_dispatch "${args[action]}"
+  }
+
+  session_osd_command_impl
+
+}
 
 # :command.parse_requirements
 parse_requirements() {
@@ -348,98 +518,92 @@ parse_requirements() {
         version_command
         exit
         ;;
-  
+
       --help | -h)
         long_usage=yes
         session_usage
         exit
         ;;
-  
+
       *)
         break
         ;;
-  
+
     esac
   done
 
-
   # :command.environment_variables_filter
-  
+
   env_var_names+=("XDG_SESSION_ID")
   env_var_names+=("XDG_CONFIG_HOME")
 
-
   # :command.command_filter
   action=${1:-}
-  
+
   case $action in
     -*) ;;
-  
+
     lock)
       action="lock"
       shift
       session_lock_parse_requirements "$@"
       shift $#
       ;;
-  
+
     locker)
       action="locker"
       shift
       session_locker_parse_requirements "$@"
       shift $#
       ;;
-  
+
     unlock)
       action="unlock"
       shift
       session_unlock_parse_requirements "$@"
       shift $#
       ;;
-  
+
+    osd)
+      action="osd"
+      shift
+      session_osd_parse_requirements "$@"
+      shift $#
+      ;;
+
     # :command.command_fallback
     "")
       session_usage >&2
       exit 1
       ;;
-    
+
     *)
       printf "invalid command: %s\n" "$action" >&2
       exit 1
       ;;
-    
-  
+
   esac
-  
 
   # :command.parse_requirements_while
   while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-  
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
         ;;
-  
+
       *)
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
         printf "invalid argument: %s\n" "$key" >&2
         exit 1
-        
-  
+
         ;;
-  
+
     esac
   done
-
-
-
-
-
-
-
-
 
 }
 
@@ -456,16 +620,13 @@ session_lock_parse_requirements() {
         session_lock_usage
         exit
         ;;
-  
+
       *)
         break
         ;;
-  
+
     esac
   done
-
-
-
 
   # :command.command_filter
   action="lock"
@@ -476,50 +637,37 @@ session_lock_parse_requirements() {
     case "$key" in
       # :flag.case
       --request)
-      
+
         # :flag.case_no_arg
         args['--request']=1
         shift
         ;;
-      
-  
+
       # :flag.case
       --run-locker)
-      
+
         # :flag.case_no_arg
         args['--run-locker']=1
         shift
         ;;
-      
-  
-  
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
         ;;
-  
+
       *)
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
         printf "invalid argument: %s\n" "$key" >&2
         exit 1
-        
-  
+
         ;;
-  
+
     esac
   done
 
-
-
-
-
-
-
-
-
 }
-
 
 # :command.parse_requirements
 session_locker_parse_requirements() {
@@ -534,16 +682,13 @@ session_locker_parse_requirements() {
         session_locker_usage
         exit
         ;;
-  
+
       *)
         break
         ;;
-  
+
     esac
   done
-
-
-
 
   # :command.command_filter
   action="locker"
@@ -552,34 +697,24 @@ session_locker_parse_requirements() {
   while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-  
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
         ;;
-  
+
       *)
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
         printf "invalid argument: %s\n" "$key" >&2
         exit 1
-        
-  
+
         ;;
-  
+
     esac
   done
 
-
-
-
-
-
-
-
-
 }
-
 
 # :command.parse_requirements
 session_unlock_parse_requirements() {
@@ -594,16 +729,13 @@ session_unlock_parse_requirements() {
         session_unlock_usage
         exit
         ;;
-  
+
       *)
         break
         ;;
-  
+
     esac
   done
-
-
-
 
   # :command.command_filter
   action="unlock"
@@ -612,43 +744,89 @@ session_unlock_parse_requirements() {
   while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
-  
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
         ;;
-  
+
       *)
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
         printf "invalid argument: %s\n" "$key" >&2
         exit 1
-        
-  
+
         ;;
-  
+
     esac
   done
 
-
-
-
-
-
-
-
-
 }
 
+# :command.parse_requirements
+session_osd_parse_requirements() {
+  local key
 
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        session_osd_usage
+        exit
+        ;;
 
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="osd"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        # :argument.case
+        if [[ -z ${args['action']+x} ]]; then
+          args['action']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['action']+x} ]]; then
+    printf "missing required argument: ACTION\nusage: session osd ACTION\n" >&2
+
+    exit 1
+  fi
+
+}
 
 # :command.initialize
 initialize() {
   declare -g version="1.0.0"
   set -e
-
-
 
 }
 
@@ -660,8 +838,6 @@ run() {
   declare -g -A deps=()
   declare -g -a env_var_names=()
   declare -g -a input=()
-  
-
 
   normalize_input "$@"
   parse_requirements "${input[@]}"
@@ -670,6 +846,7 @@ run() {
     "lock") session_lock_command ;;
     "locker") session_locker_command ;;
     "unlock") session_unlock_command ;;
+    "osd") session_osd_command ;;
   esac
 }
 

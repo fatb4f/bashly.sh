@@ -1,5 +1,5 @@
 name: session
-help: Session lock and unlock manager
+help: Session lock, unlock, and OSD manager
 version: 1.0.0
 
 environment_variables:
@@ -33,3 +33,17 @@ commands:
     filename: commands/unlock.sh
     examples:
       - session unlock
+
+  - name: osd
+    help: Apply an on-screen display update
+    filename: commands/osd.sh
+    args:
+      - name: action
+        help: OSD action to execute
+        required: true
+    examples:
+      - session osd volume-up
+      - session osd volume-down
+      - session osd volume-toggle
+      - session osd brightness-up
+      - session osd brightness-down
